@@ -1,0 +1,17 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries:
+      - "../queries/user.sql"
+      - "../queries/digimon.sql"
+      - "../queries/stage.sql"
+    schema: "schema.sql"
+    gen:
+      go:
+        package: "models"
+        out: "../models/"
+        sql_package: "pgx/v5"
+        overrides:
+          - db_type: "uuid"
+            go_type: "github.com/google/uuid.UUID"
+            
