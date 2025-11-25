@@ -11,27 +11,11 @@ func NewErrorMessage(code ErrorCode) ServerPayload {
 	}
 }
 
-func NewLoginResponse(access_token, username string, level, exp int32, bits, yen int64, staminaCurrent, staminaMax int32) ServerPayload {
-	return &FromServerToClient_LoginResponse{
-		LoginResponse: &LoginResponse{
-			AccessToken: access_token,
-			UserData: &UserData{
-				Username:       username,
-				Level:          level,
-				Exp:            exp,
-				Bits:           bits,
-				Yen:            yen,
-				StaminaCurrent: staminaCurrent,
-				StaminaMax:     staminaMax,
-			},
-		},
-	}
-}
-
-func NewRegisterResponse(access_token string) ServerPayload {
-	return &FromServerToClient_RegisterResponse{
-		RegisterResponse: &RegisterResponse{
-			AccessToken: access_token,
+func NewAuthenticationResponse(token string, userData *UserData) ServerPayload {
+	return &FromServerToClient_AuthenticationResponse{
+		AuthenticationResponse: &AuthenticationResponse{
+			AccessToken: token,
+			UserData:    userData,
 		},
 	}
 }

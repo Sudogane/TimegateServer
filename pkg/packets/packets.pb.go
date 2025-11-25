@@ -21,18 +21,60 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type AuthenticationType int32
+
+const (
+	AuthenticationType_LOGIN    AuthenticationType = 0
+	AuthenticationType_REGISTER AuthenticationType = 1
+)
+
+// Enum value maps for AuthenticationType.
+var (
+	AuthenticationType_name = map[int32]string{
+		0: "LOGIN",
+		1: "REGISTER",
+	}
+	AuthenticationType_value = map[string]int32{
+		"LOGIN":    0,
+		"REGISTER": 1,
+	}
+)
+
+func (x AuthenticationType) Enum() *AuthenticationType {
+	p := new(AuthenticationType)
+	*p = x
+	return p
+}
+
+func (x AuthenticationType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AuthenticationType) Descriptor() protoreflect.EnumDescriptor {
+	return file_packets_proto_enumTypes[0].Descriptor()
+}
+
+func (AuthenticationType) Type() protoreflect.EnumType {
+	return &file_packets_proto_enumTypes[0]
+}
+
+func (x AuthenticationType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AuthenticationType.Descriptor instead.
+func (AuthenticationType) EnumDescriptor() ([]byte, []int) {
+	return file_packets_proto_rawDescGZIP(), []int{0}
+}
+
 type PacketType int32
 
 const (
-	PacketType_UNKOWN PacketType = 0
-	// Authentication
-	PacketType_LOGIN_REQUEST         PacketType = 1
-	PacketType_LOGIN_RESPONSE        PacketType = 2
-	PacketType_REGISTRATION_REQUEST  PacketType = 3
-	PacketType_REGISTRATION_RESPONSE PacketType = 4
+	PacketType_UNKOWN                 PacketType = 0
+	PacketType_AUTHENTICATION_REQUEST PacketType = 1
 	// User
-	PacketType_CHAPTER_DATA_REQUEST        PacketType = 5
-	PacketType_EPISODES_BY_CHAPTER_REQUEST PacketType = 6
+	PacketType_CHAPTER_DATA_REQUEST        PacketType = 2
+	PacketType_EPISODES_BY_CHAPTER_REQUEST PacketType = 3
 	PacketType_DEVELOPMENT                 PacketType = 999
 )
 
@@ -40,22 +82,16 @@ const (
 var (
 	PacketType_name = map[int32]string{
 		0:   "UNKOWN",
-		1:   "LOGIN_REQUEST",
-		2:   "LOGIN_RESPONSE",
-		3:   "REGISTRATION_REQUEST",
-		4:   "REGISTRATION_RESPONSE",
-		5:   "CHAPTER_DATA_REQUEST",
-		6:   "EPISODES_BY_CHAPTER_REQUEST",
+		1:   "AUTHENTICATION_REQUEST",
+		2:   "CHAPTER_DATA_REQUEST",
+		3:   "EPISODES_BY_CHAPTER_REQUEST",
 		999: "DEVELOPMENT",
 	}
 	PacketType_value = map[string]int32{
 		"UNKOWN":                      0,
-		"LOGIN_REQUEST":               1,
-		"LOGIN_RESPONSE":              2,
-		"REGISTRATION_REQUEST":        3,
-		"REGISTRATION_RESPONSE":       4,
-		"CHAPTER_DATA_REQUEST":        5,
-		"EPISODES_BY_CHAPTER_REQUEST": 6,
+		"AUTHENTICATION_REQUEST":      1,
+		"CHAPTER_DATA_REQUEST":        2,
+		"EPISODES_BY_CHAPTER_REQUEST": 3,
 		"DEVELOPMENT":                 999,
 	}
 )
@@ -71,11 +107,11 @@ func (x PacketType) String() string {
 }
 
 func (PacketType) Descriptor() protoreflect.EnumDescriptor {
-	return file_packets_proto_enumTypes[0].Descriptor()
+	return file_packets_proto_enumTypes[1].Descriptor()
 }
 
 func (PacketType) Type() protoreflect.EnumType {
-	return &file_packets_proto_enumTypes[0]
+	return &file_packets_proto_enumTypes[1]
 }
 
 func (x PacketType) Number() protoreflect.EnumNumber {
@@ -84,7 +120,7 @@ func (x PacketType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use PacketType.Descriptor instead.
 func (PacketType) EnumDescriptor() ([]byte, []int) {
-	return file_packets_proto_rawDescGZIP(), []int{0}
+	return file_packets_proto_rawDescGZIP(), []int{1}
 }
 
 type ErrorCode int32
@@ -127,11 +163,11 @@ func (x ErrorCode) String() string {
 }
 
 func (ErrorCode) Descriptor() protoreflect.EnumDescriptor {
-	return file_packets_proto_enumTypes[1].Descriptor()
+	return file_packets_proto_enumTypes[2].Descriptor()
 }
 
 func (ErrorCode) Type() protoreflect.EnumType {
-	return &file_packets_proto_enumTypes[1]
+	return &file_packets_proto_enumTypes[2]
 }
 
 func (x ErrorCode) Number() protoreflect.EnumNumber {
@@ -140,7 +176,7 @@ func (x ErrorCode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ErrorCode.Descriptor instead.
 func (ErrorCode) EnumDescriptor() ([]byte, []int) {
-	return file_packets_proto_rawDescGZIP(), []int{1}
+	return file_packets_proto_rawDescGZIP(), []int{2}
 }
 
 type FromClientToServer struct {
@@ -149,8 +185,7 @@ type FromClientToServer struct {
 	UserId     string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	// Types that are valid to be assigned to Payload:
 	//
-	//	*FromClientToServer_LoginRequest
-	//	*FromClientToServer_RegisterRequest
+	//	*FromClientToServer_AuthenticationRequest
 	//	*FromClientToServer_EpisodesByChapterRequest
 	//	*FromClientToServer_Dev
 	Payload       isFromClientToServer_Payload `protobuf_oneof:"payload"`
@@ -209,19 +244,10 @@ func (x *FromClientToServer) GetPayload() isFromClientToServer_Payload {
 	return nil
 }
 
-func (x *FromClientToServer) GetLoginRequest() *LoginRequest {
+func (x *FromClientToServer) GetAuthenticationRequest() *AuthenticationRequest {
 	if x != nil {
-		if x, ok := x.Payload.(*FromClientToServer_LoginRequest); ok {
-			return x.LoginRequest
-		}
-	}
-	return nil
-}
-
-func (x *FromClientToServer) GetRegisterRequest() *RegisterRequest {
-	if x != nil {
-		if x, ok := x.Payload.(*FromClientToServer_RegisterRequest); ok {
-			return x.RegisterRequest
+		if x, ok := x.Payload.(*FromClientToServer_AuthenticationRequest); ok {
+			return x.AuthenticationRequest
 		}
 	}
 	return nil
@@ -249,25 +275,19 @@ type isFromClientToServer_Payload interface {
 	isFromClientToServer_Payload()
 }
 
-type FromClientToServer_LoginRequest struct {
-	LoginRequest *LoginRequest `protobuf:"bytes,10,opt,name=login_request,json=loginRequest,proto3,oneof"`
-}
-
-type FromClientToServer_RegisterRequest struct {
-	RegisterRequest *RegisterRequest `protobuf:"bytes,11,opt,name=register_request,json=registerRequest,proto3,oneof"`
+type FromClientToServer_AuthenticationRequest struct {
+	AuthenticationRequest *AuthenticationRequest `protobuf:"bytes,10,opt,name=authentication_request,json=authenticationRequest,proto3,oneof"`
 }
 
 type FromClientToServer_EpisodesByChapterRequest struct {
-	EpisodesByChapterRequest *EpisodesByChapterRequest `protobuf:"bytes,12,opt,name=episodes_by_chapter_request,json=episodesByChapterRequest,proto3,oneof"`
+	EpisodesByChapterRequest *EpisodesByChapterRequest `protobuf:"bytes,11,opt,name=episodes_by_chapter_request,json=episodesByChapterRequest,proto3,oneof"`
 }
 
 type FromClientToServer_Dev struct {
 	Dev *DevelopmentPacket `protobuf:"bytes,9999,opt,name=dev,proto3,oneof"`
 }
 
-func (*FromClientToServer_LoginRequest) isFromClientToServer_Payload() {}
-
-func (*FromClientToServer_RegisterRequest) isFromClientToServer_Payload() {}
+func (*FromClientToServer_AuthenticationRequest) isFromClientToServer_Payload() {}
 
 func (*FromClientToServer_EpisodesByChapterRequest) isFromClientToServer_Payload() {}
 
@@ -279,8 +299,7 @@ type FromServerToClient struct {
 	//
 	//	*FromServerToClient_WebsocketId
 	//	*FromServerToClient_ErrorResponse
-	//	*FromServerToClient_LoginResponse
-	//	*FromServerToClient_RegisterResponse
+	//	*FromServerToClient_AuthenticationResponse
 	//	*FromServerToClient_ChapterDataResponse
 	//	*FromServerToClient_EpisodeDataResponse
 	Payload       isFromServerToClient_Payload `protobuf_oneof:"payload"`
@@ -343,19 +362,10 @@ func (x *FromServerToClient) GetErrorResponse() *ErrorResponse {
 	return nil
 }
 
-func (x *FromServerToClient) GetLoginResponse() *LoginResponse {
+func (x *FromServerToClient) GetAuthenticationResponse() *AuthenticationResponse {
 	if x != nil {
-		if x, ok := x.Payload.(*FromServerToClient_LoginResponse); ok {
-			return x.LoginResponse
-		}
-	}
-	return nil
-}
-
-func (x *FromServerToClient) GetRegisterResponse() *RegisterResponse {
-	if x != nil {
-		if x, ok := x.Payload.(*FromServerToClient_RegisterResponse); ok {
-			return x.RegisterResponse
+		if x, ok := x.Payload.(*FromServerToClient_AuthenticationResponse); ok {
+			return x.AuthenticationResponse
 		}
 	}
 	return nil
@@ -391,29 +401,23 @@ type FromServerToClient_ErrorResponse struct {
 	ErrorResponse *ErrorResponse `protobuf:"bytes,2,opt,name=error_response,json=errorResponse,proto3,oneof"`
 }
 
-type FromServerToClient_LoginResponse struct {
-	LoginResponse *LoginResponse `protobuf:"bytes,3,opt,name=login_response,json=loginResponse,proto3,oneof"`
-}
-
-type FromServerToClient_RegisterResponse struct {
-	RegisterResponse *RegisterResponse `protobuf:"bytes,4,opt,name=register_response,json=registerResponse,proto3,oneof"`
+type FromServerToClient_AuthenticationResponse struct {
+	AuthenticationResponse *AuthenticationResponse `protobuf:"bytes,3,opt,name=authentication_response,json=authenticationResponse,proto3,oneof"`
 }
 
 type FromServerToClient_ChapterDataResponse struct {
-	ChapterDataResponse *AccessibleChapterResponse `protobuf:"bytes,5,opt,name=chapter_data_response,json=chapterDataResponse,proto3,oneof"`
+	ChapterDataResponse *AccessibleChapterResponse `protobuf:"bytes,4,opt,name=chapter_data_response,json=chapterDataResponse,proto3,oneof"`
 }
 
 type FromServerToClient_EpisodeDataResponse struct {
-	EpisodeDataResponse *AccessibleEpisodesResponse `protobuf:"bytes,6,opt,name=episode_data_response,json=episodeDataResponse,proto3,oneof"`
+	EpisodeDataResponse *AccessibleEpisodesResponse `protobuf:"bytes,5,opt,name=episode_data_response,json=episodeDataResponse,proto3,oneof"`
 }
 
 func (*FromServerToClient_WebsocketId) isFromServerToClient_Payload() {}
 
 func (*FromServerToClient_ErrorResponse) isFromServerToClient_Payload() {}
 
-func (*FromServerToClient_LoginResponse) isFromServerToClient_Payload() {}
-
-func (*FromServerToClient_RegisterResponse) isFromServerToClient_Payload() {}
+func (*FromServerToClient_AuthenticationResponse) isFromServerToClient_Payload() {}
 
 func (*FromServerToClient_ChapterDataResponse) isFromServerToClient_Payload() {}
 
@@ -508,28 +512,29 @@ func (x *WebsocketIDResponse) GetId() string {
 	return ""
 }
 
-type LoginRequest struct {
+type AuthenticationRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	Type          AuthenticationType     `protobuf:"varint,1,opt,name=type,proto3,enum=packets.AuthenticationType" json:"type,omitempty"`
+	Username      string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
+	Password      string                 `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *LoginRequest) Reset() {
-	*x = LoginRequest{}
+func (x *AuthenticationRequest) Reset() {
+	*x = AuthenticationRequest{}
 	mi := &file_packets_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *LoginRequest) String() string {
+func (x *AuthenticationRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*LoginRequest) ProtoMessage() {}
+func (*AuthenticationRequest) ProtoMessage() {}
 
-func (x *LoginRequest) ProtoReflect() protoreflect.Message {
+func (x *AuthenticationRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_packets_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -541,26 +546,33 @@ func (x *LoginRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LoginRequest.ProtoReflect.Descriptor instead.
-func (*LoginRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use AuthenticationRequest.ProtoReflect.Descriptor instead.
+func (*AuthenticationRequest) Descriptor() ([]byte, []int) {
 	return file_packets_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *LoginRequest) GetUsername() string {
+func (x *AuthenticationRequest) GetType() AuthenticationType {
+	if x != nil {
+		return x.Type
+	}
+	return AuthenticationType_LOGIN
+}
+
+func (x *AuthenticationRequest) GetUsername() string {
 	if x != nil {
 		return x.Username
 	}
 	return ""
 }
 
-func (x *LoginRequest) GetPassword() string {
+func (x *AuthenticationRequest) GetPassword() string {
 	if x != nil {
 		return x.Password
 	}
 	return ""
 }
 
-type LoginResponse struct {
+type AuthenticationResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
 	UserData      *UserData              `protobuf:"bytes,2,opt,name=user_data,json=userData,proto3" json:"user_data,omitempty"`
@@ -568,20 +580,20 @@ type LoginResponse struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *LoginResponse) Reset() {
-	*x = LoginResponse{}
+func (x *AuthenticationResponse) Reset() {
+	*x = AuthenticationResponse{}
 	mi := &file_packets_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *LoginResponse) String() string {
+func (x *AuthenticationResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*LoginResponse) ProtoMessage() {}
+func (*AuthenticationResponse) ProtoMessage() {}
 
-func (x *LoginResponse) ProtoReflect() protoreflect.Message {
+func (x *AuthenticationResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_packets_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -593,119 +605,23 @@ func (x *LoginResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LoginResponse.ProtoReflect.Descriptor instead.
-func (*LoginResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use AuthenticationResponse.ProtoReflect.Descriptor instead.
+func (*AuthenticationResponse) Descriptor() ([]byte, []int) {
 	return file_packets_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *LoginResponse) GetAccessToken() string {
+func (x *AuthenticationResponse) GetAccessToken() string {
 	if x != nil {
 		return x.AccessToken
 	}
 	return ""
 }
 
-func (x *LoginResponse) GetUserData() *UserData {
+func (x *AuthenticationResponse) GetUserData() *UserData {
 	if x != nil {
 		return x.UserData
 	}
 	return nil
-}
-
-type RegisterRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *RegisterRequest) Reset() {
-	*x = RegisterRequest{}
-	mi := &file_packets_proto_msgTypes[6]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *RegisterRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*RegisterRequest) ProtoMessage() {}
-
-func (x *RegisterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_packets_proto_msgTypes[6]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use RegisterRequest.ProtoReflect.Descriptor instead.
-func (*RegisterRequest) Descriptor() ([]byte, []int) {
-	return file_packets_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *RegisterRequest) GetUsername() string {
-	if x != nil {
-		return x.Username
-	}
-	return ""
-}
-
-func (x *RegisterRequest) GetPassword() string {
-	if x != nil {
-		return x.Password
-	}
-	return ""
-}
-
-type RegisterResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *RegisterResponse) Reset() {
-	*x = RegisterResponse{}
-	mi := &file_packets_proto_msgTypes[7]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *RegisterResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*RegisterResponse) ProtoMessage() {}
-
-func (x *RegisterResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_packets_proto_msgTypes[7]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use RegisterResponse.ProtoReflect.Descriptor instead.
-func (*RegisterResponse) Descriptor() ([]byte, []int) {
-	return file_packets_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *RegisterResponse) GetAccessToken() string {
-	if x != nil {
-		return x.AccessToken
-	}
-	return ""
 }
 
 // General Info
@@ -724,7 +640,7 @@ type UserData struct {
 
 func (x *UserData) Reset() {
 	*x = UserData{}
-	mi := &file_packets_proto_msgTypes[8]
+	mi := &file_packets_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -736,7 +652,7 @@ func (x *UserData) String() string {
 func (*UserData) ProtoMessage() {}
 
 func (x *UserData) ProtoReflect() protoreflect.Message {
-	mi := &file_packets_proto_msgTypes[8]
+	mi := &file_packets_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -749,7 +665,7 @@ func (x *UserData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserData.ProtoReflect.Descriptor instead.
 func (*UserData) Descriptor() ([]byte, []int) {
-	return file_packets_proto_rawDescGZIP(), []int{8}
+	return file_packets_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *UserData) GetUsername() string {
@@ -811,7 +727,7 @@ type AccessibleChapterResponse struct {
 
 func (x *AccessibleChapterResponse) Reset() {
 	*x = AccessibleChapterResponse{}
-	mi := &file_packets_proto_msgTypes[9]
+	mi := &file_packets_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -823,7 +739,7 @@ func (x *AccessibleChapterResponse) String() string {
 func (*AccessibleChapterResponse) ProtoMessage() {}
 
 func (x *AccessibleChapterResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_packets_proto_msgTypes[9]
+	mi := &file_packets_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -836,7 +752,7 @@ func (x *AccessibleChapterResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AccessibleChapterResponse.ProtoReflect.Descriptor instead.
 func (*AccessibleChapterResponse) Descriptor() ([]byte, []int) {
-	return file_packets_proto_rawDescGZIP(), []int{9}
+	return file_packets_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *AccessibleChapterResponse) GetChapters() []*ChapterData {
@@ -860,7 +776,7 @@ type ChapterData struct {
 
 func (x *ChapterData) Reset() {
 	*x = ChapterData{}
-	mi := &file_packets_proto_msgTypes[10]
+	mi := &file_packets_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -872,7 +788,7 @@ func (x *ChapterData) String() string {
 func (*ChapterData) ProtoMessage() {}
 
 func (x *ChapterData) ProtoReflect() protoreflect.Message {
-	mi := &file_packets_proto_msgTypes[10]
+	mi := &file_packets_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -885,7 +801,7 @@ func (x *ChapterData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChapterData.ProtoReflect.Descriptor instead.
 func (*ChapterData) Descriptor() ([]byte, []int) {
-	return file_packets_proto_rawDescGZIP(), []int{10}
+	return file_packets_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ChapterData) GetChapterId() int32 {
@@ -939,7 +855,7 @@ type EpisodesByChapterRequest struct {
 
 func (x *EpisodesByChapterRequest) Reset() {
 	*x = EpisodesByChapterRequest{}
-	mi := &file_packets_proto_msgTypes[11]
+	mi := &file_packets_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -951,7 +867,7 @@ func (x *EpisodesByChapterRequest) String() string {
 func (*EpisodesByChapterRequest) ProtoMessage() {}
 
 func (x *EpisodesByChapterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_packets_proto_msgTypes[11]
+	mi := &file_packets_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -964,7 +880,7 @@ func (x *EpisodesByChapterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EpisodesByChapterRequest.ProtoReflect.Descriptor instead.
 func (*EpisodesByChapterRequest) Descriptor() ([]byte, []int) {
-	return file_packets_proto_rawDescGZIP(), []int{11}
+	return file_packets_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *EpisodesByChapterRequest) GetChapterId() int32 {
@@ -983,7 +899,7 @@ type AccessibleEpisodesResponse struct {
 
 func (x *AccessibleEpisodesResponse) Reset() {
 	*x = AccessibleEpisodesResponse{}
-	mi := &file_packets_proto_msgTypes[12]
+	mi := &file_packets_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -995,7 +911,7 @@ func (x *AccessibleEpisodesResponse) String() string {
 func (*AccessibleEpisodesResponse) ProtoMessage() {}
 
 func (x *AccessibleEpisodesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_packets_proto_msgTypes[12]
+	mi := &file_packets_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1008,7 +924,7 @@ func (x *AccessibleEpisodesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AccessibleEpisodesResponse.ProtoReflect.Descriptor instead.
 func (*AccessibleEpisodesResponse) Descriptor() ([]byte, []int) {
-	return file_packets_proto_rawDescGZIP(), []int{12}
+	return file_packets_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *AccessibleEpisodesResponse) GetEpisodes() []*EpisodeData {
@@ -1029,7 +945,7 @@ type EpisodeData struct {
 
 func (x *EpisodeData) Reset() {
 	*x = EpisodeData{}
-	mi := &file_packets_proto_msgTypes[13]
+	mi := &file_packets_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1041,7 +957,7 @@ func (x *EpisodeData) String() string {
 func (*EpisodeData) ProtoMessage() {}
 
 func (x *EpisodeData) ProtoReflect() protoreflect.Message {
-	mi := &file_packets_proto_msgTypes[13]
+	mi := &file_packets_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1054,7 +970,7 @@ func (x *EpisodeData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EpisodeData.ProtoReflect.Descriptor instead.
 func (*EpisodeData) Descriptor() ([]byte, []int) {
-	return file_packets_proto_rawDescGZIP(), []int{13}
+	return file_packets_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *EpisodeData) GetEpisodeId() int32 {
@@ -1088,7 +1004,7 @@ type DevelopmentPacket struct {
 
 func (x *DevelopmentPacket) Reset() {
 	*x = DevelopmentPacket{}
-	mi := &file_packets_proto_msgTypes[14]
+	mi := &file_packets_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1100,7 +1016,7 @@ func (x *DevelopmentPacket) String() string {
 func (*DevelopmentPacket) ProtoMessage() {}
 
 func (x *DevelopmentPacket) ProtoReflect() protoreflect.Message {
-	mi := &file_packets_proto_msgTypes[14]
+	mi := &file_packets_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1113,7 +1029,7 @@ func (x *DevelopmentPacket) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DevelopmentPacket.ProtoReflect.Descriptor instead.
 func (*DevelopmentPacket) Descriptor() ([]byte, []int) {
-	return file_packets_proto_rawDescGZIP(), []int{14}
+	return file_packets_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *DevelopmentPacket) GetADD_DIGIMON_TO_TEAM() bool {
@@ -1134,40 +1050,34 @@ var File_packets_proto protoreflect.FileDescriptor
 
 const file_packets_proto_rawDesc = "" +
 	"\n" +
-	"\rpackets.proto\x12\apackets\"\x88\x03\n" +
+	"\rpackets.proto\x12\apackets\"\xdc\x02\n" +
 	"\x12FromClientToServer\x124\n" +
 	"\vpacket_type\x18\x01 \x01(\x0e2\x13.packets.PacketTypeR\n" +
 	"packetType\x12\x17\n" +
-	"\auser_id\x18\x02 \x01(\tR\x06userId\x12<\n" +
-	"\rlogin_request\x18\n" +
-	" \x01(\v2\x15.packets.LoginRequestH\x00R\floginRequest\x12E\n" +
-	"\x10register_request\x18\v \x01(\v2\x18.packets.RegisterRequestH\x00R\x0fregisterRequest\x12b\n" +
-	"\x1bepisodes_by_chapter_request\x18\f \x01(\v2!.packets.EpisodesByChapterRequestH\x00R\x18episodesByChapterRequest\x12/\n" +
+	"\auser_id\x18\x02 \x01(\tR\x06userId\x12W\n" +
+	"\x16authentication_request\x18\n" +
+	" \x01(\v2\x1e.packets.AuthenticationRequestH\x00R\x15authenticationRequest\x12b\n" +
+	"\x1bepisodes_by_chapter_request\x18\v \x01(\v2!.packets.EpisodesByChapterRequestH\x00R\x18episodesByChapterRequest\x12/\n" +
 	"\x03dev\x18\x8fN \x01(\v2\x1a.packets.DevelopmentPacketH\x00R\x03devB\t\n" +
-	"\apayload\"\xe3\x03\n" +
+	"\apayload\"\xb4\x03\n" +
 	"\x12FromServerToClient\x12A\n" +
 	"\fwebsocket_id\x18\x01 \x01(\v2\x1c.packets.WebsocketIDResponseH\x00R\vwebsocketId\x12?\n" +
-	"\x0eerror_response\x18\x02 \x01(\v2\x16.packets.ErrorResponseH\x00R\rerrorResponse\x12?\n" +
-	"\x0elogin_response\x18\x03 \x01(\v2\x16.packets.LoginResponseH\x00R\rloginResponse\x12H\n" +
-	"\x11register_response\x18\x04 \x01(\v2\x19.packets.RegisterResponseH\x00R\x10registerResponse\x12X\n" +
-	"\x15chapter_data_response\x18\x05 \x01(\v2\".packets.AccessibleChapterResponseH\x00R\x13chapterDataResponse\x12Y\n" +
-	"\x15episode_data_response\x18\x06 \x01(\v2#.packets.AccessibleEpisodesResponseH\x00R\x13episodeDataResponseB\t\n" +
+	"\x0eerror_response\x18\x02 \x01(\v2\x16.packets.ErrorResponseH\x00R\rerrorResponse\x12Z\n" +
+	"\x17authentication_response\x18\x03 \x01(\v2\x1f.packets.AuthenticationResponseH\x00R\x16authenticationResponse\x12X\n" +
+	"\x15chapter_data_response\x18\x04 \x01(\v2\".packets.AccessibleChapterResponseH\x00R\x13chapterDataResponse\x12Y\n" +
+	"\x15episode_data_response\x18\x05 \x01(\v2#.packets.AccessibleEpisodesResponseH\x00R\x13episodeDataResponseB\t\n" +
 	"\apayload\"7\n" +
 	"\rErrorResponse\x12&\n" +
 	"\x04code\x18\x01 \x01(\x0e2\x12.packets.ErrorCodeR\x04code\"%\n" +
 	"\x13WebsocketIDResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"F\n" +
-	"\fLoginRequest\x12\x1a\n" +
-	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"b\n" +
-	"\rLoginResponse\x12!\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x80\x01\n" +
+	"\x15AuthenticationRequest\x12/\n" +
+	"\x04type\x18\x01 \x01(\x0e2\x1b.packets.AuthenticationTypeR\x04type\x12\x1a\n" +
+	"\busername\x18\x02 \x01(\tR\busername\x12\x1a\n" +
+	"\bpassword\x18\x03 \x01(\tR\bpassword\"k\n" +
+	"\x16AuthenticationResponse\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12.\n" +
-	"\tuser_data\x18\x02 \x01(\v2\x11.packets.UserDataR\buserData\"I\n" +
-	"\x0fRegisterRequest\x12\x1a\n" +
-	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"5\n" +
-	"\x10RegisterResponse\x12!\n" +
-	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\"\xbe\x01\n" +
+	"\tuser_data\x18\x02 \x01(\v2\x11.packets.UserDataR\buserData\"\xbe\x01\n" +
 	"\bUserData\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x14\n" +
 	"\x05level\x18\x02 \x01(\x05R\x05level\x12\x10\n" +
@@ -1200,17 +1110,17 @@ const file_packets_proto_rawDesc = "" +
 	"\fepisode_name\x18\x03 \x01(\tR\vepisodeName\"g\n" +
 	"\x11DevelopmentPacket\x12-\n" +
 	"\x13ADD_DIGIMON_TO_TEAM\x18\x01 \x01(\bR\x10ADDDIGIMONTOTEAM\x12#\n" +
-	"\rRESET_ACCOUNT\x18\x02 \x01(\bR\fRESETACCOUNT*\xc1\x01\n" +
+	"\rRESET_ACCOUNT\x18\x02 \x01(\bR\fRESETACCOUNT*-\n" +
+	"\x12AuthenticationType\x12\t\n" +
+	"\x05LOGIN\x10\x00\x12\f\n" +
+	"\bREGISTER\x10\x01*\x81\x01\n" +
 	"\n" +
 	"PacketType\x12\n" +
 	"\n" +
-	"\x06UNKOWN\x10\x00\x12\x11\n" +
-	"\rLOGIN_REQUEST\x10\x01\x12\x12\n" +
-	"\x0eLOGIN_RESPONSE\x10\x02\x12\x18\n" +
-	"\x14REGISTRATION_REQUEST\x10\x03\x12\x19\n" +
-	"\x15REGISTRATION_RESPONSE\x10\x04\x12\x18\n" +
-	"\x14CHAPTER_DATA_REQUEST\x10\x05\x12\x1f\n" +
-	"\x1bEPISODES_BY_CHAPTER_REQUEST\x10\x06\x12\x10\n" +
+	"\x06UNKOWN\x10\x00\x12\x1a\n" +
+	"\x16AUTHENTICATION_REQUEST\x10\x01\x12\x18\n" +
+	"\x14CHAPTER_DATA_REQUEST\x10\x02\x12\x1f\n" +
+	"\x1bEPISODES_BY_CHAPTER_REQUEST\x10\x03\x12\x10\n" +
 	"\vDEVELOPMENT\x10\xe7\a*\x82\x01\n" +
 	"\tErrorCode\x12\x10\n" +
 	"\fUNKOWN_ERROR\x10\x00\x12\x17\n" +
@@ -1231,48 +1141,46 @@ func file_packets_proto_rawDescGZIP() []byte {
 	return file_packets_proto_rawDescData
 }
 
-var file_packets_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_packets_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_packets_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_packets_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_packets_proto_goTypes = []any{
-	(PacketType)(0),                    // 0: packets.PacketType
-	(ErrorCode)(0),                     // 1: packets.ErrorCode
-	(*FromClientToServer)(nil),         // 2: packets.FromClientToServer
-	(*FromServerToClient)(nil),         // 3: packets.FromServerToClient
-	(*ErrorResponse)(nil),              // 4: packets.ErrorResponse
-	(*WebsocketIDResponse)(nil),        // 5: packets.WebsocketIDResponse
-	(*LoginRequest)(nil),               // 6: packets.LoginRequest
-	(*LoginResponse)(nil),              // 7: packets.LoginResponse
-	(*RegisterRequest)(nil),            // 8: packets.RegisterRequest
-	(*RegisterResponse)(nil),           // 9: packets.RegisterResponse
-	(*UserData)(nil),                   // 10: packets.UserData
-	(*AccessibleChapterResponse)(nil),  // 11: packets.AccessibleChapterResponse
-	(*ChapterData)(nil),                // 12: packets.ChapterData
-	(*EpisodesByChapterRequest)(nil),   // 13: packets.EpisodesByChapterRequest
-	(*AccessibleEpisodesResponse)(nil), // 14: packets.AccessibleEpisodesResponse
-	(*EpisodeData)(nil),                // 15: packets.EpisodeData
-	(*DevelopmentPacket)(nil),          // 16: packets.DevelopmentPacket
+	(AuthenticationType)(0),            // 0: packets.AuthenticationType
+	(PacketType)(0),                    // 1: packets.PacketType
+	(ErrorCode)(0),                     // 2: packets.ErrorCode
+	(*FromClientToServer)(nil),         // 3: packets.FromClientToServer
+	(*FromServerToClient)(nil),         // 4: packets.FromServerToClient
+	(*ErrorResponse)(nil),              // 5: packets.ErrorResponse
+	(*WebsocketIDResponse)(nil),        // 6: packets.WebsocketIDResponse
+	(*AuthenticationRequest)(nil),      // 7: packets.AuthenticationRequest
+	(*AuthenticationResponse)(nil),     // 8: packets.AuthenticationResponse
+	(*UserData)(nil),                   // 9: packets.UserData
+	(*AccessibleChapterResponse)(nil),  // 10: packets.AccessibleChapterResponse
+	(*ChapterData)(nil),                // 11: packets.ChapterData
+	(*EpisodesByChapterRequest)(nil),   // 12: packets.EpisodesByChapterRequest
+	(*AccessibleEpisodesResponse)(nil), // 13: packets.AccessibleEpisodesResponse
+	(*EpisodeData)(nil),                // 14: packets.EpisodeData
+	(*DevelopmentPacket)(nil),          // 15: packets.DevelopmentPacket
 }
 var file_packets_proto_depIdxs = []int32{
-	0,  // 0: packets.FromClientToServer.packet_type:type_name -> packets.PacketType
-	6,  // 1: packets.FromClientToServer.login_request:type_name -> packets.LoginRequest
-	8,  // 2: packets.FromClientToServer.register_request:type_name -> packets.RegisterRequest
-	13, // 3: packets.FromClientToServer.episodes_by_chapter_request:type_name -> packets.EpisodesByChapterRequest
-	16, // 4: packets.FromClientToServer.dev:type_name -> packets.DevelopmentPacket
-	5,  // 5: packets.FromServerToClient.websocket_id:type_name -> packets.WebsocketIDResponse
-	4,  // 6: packets.FromServerToClient.error_response:type_name -> packets.ErrorResponse
-	7,  // 7: packets.FromServerToClient.login_response:type_name -> packets.LoginResponse
-	9,  // 8: packets.FromServerToClient.register_response:type_name -> packets.RegisterResponse
-	11, // 9: packets.FromServerToClient.chapter_data_response:type_name -> packets.AccessibleChapterResponse
-	14, // 10: packets.FromServerToClient.episode_data_response:type_name -> packets.AccessibleEpisodesResponse
-	1,  // 11: packets.ErrorResponse.code:type_name -> packets.ErrorCode
-	10, // 12: packets.LoginResponse.user_data:type_name -> packets.UserData
-	12, // 13: packets.AccessibleChapterResponse.chapters:type_name -> packets.ChapterData
-	15, // 14: packets.AccessibleEpisodesResponse.episodes:type_name -> packets.EpisodeData
-	15, // [15:15] is the sub-list for method output_type
-	15, // [15:15] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	1,  // 0: packets.FromClientToServer.packet_type:type_name -> packets.PacketType
+	7,  // 1: packets.FromClientToServer.authentication_request:type_name -> packets.AuthenticationRequest
+	12, // 2: packets.FromClientToServer.episodes_by_chapter_request:type_name -> packets.EpisodesByChapterRequest
+	15, // 3: packets.FromClientToServer.dev:type_name -> packets.DevelopmentPacket
+	6,  // 4: packets.FromServerToClient.websocket_id:type_name -> packets.WebsocketIDResponse
+	5,  // 5: packets.FromServerToClient.error_response:type_name -> packets.ErrorResponse
+	8,  // 6: packets.FromServerToClient.authentication_response:type_name -> packets.AuthenticationResponse
+	10, // 7: packets.FromServerToClient.chapter_data_response:type_name -> packets.AccessibleChapterResponse
+	13, // 8: packets.FromServerToClient.episode_data_response:type_name -> packets.AccessibleEpisodesResponse
+	2,  // 9: packets.ErrorResponse.code:type_name -> packets.ErrorCode
+	0,  // 10: packets.AuthenticationRequest.type:type_name -> packets.AuthenticationType
+	9,  // 11: packets.AuthenticationResponse.user_data:type_name -> packets.UserData
+	11, // 12: packets.AccessibleChapterResponse.chapters:type_name -> packets.ChapterData
+	14, // 13: packets.AccessibleEpisodesResponse.episodes:type_name -> packets.EpisodeData
+	14, // [14:14] is the sub-list for method output_type
+	14, // [14:14] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_packets_proto_init() }
@@ -1281,16 +1189,14 @@ func file_packets_proto_init() {
 		return
 	}
 	file_packets_proto_msgTypes[0].OneofWrappers = []any{
-		(*FromClientToServer_LoginRequest)(nil),
-		(*FromClientToServer_RegisterRequest)(nil),
+		(*FromClientToServer_AuthenticationRequest)(nil),
 		(*FromClientToServer_EpisodesByChapterRequest)(nil),
 		(*FromClientToServer_Dev)(nil),
 	}
 	file_packets_proto_msgTypes[1].OneofWrappers = []any{
 		(*FromServerToClient_WebsocketId)(nil),
 		(*FromServerToClient_ErrorResponse)(nil),
-		(*FromServerToClient_LoginResponse)(nil),
-		(*FromServerToClient_RegisterResponse)(nil),
+		(*FromServerToClient_AuthenticationResponse)(nil),
 		(*FromServerToClient_ChapterDataResponse)(nil),
 		(*FromServerToClient_EpisodeDataResponse)(nil),
 	}
@@ -1299,8 +1205,8 @@ func file_packets_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_packets_proto_rawDesc), len(file_packets_proto_rawDesc)),
-			NumEnums:      2,
-			NumMessages:   15,
+			NumEnums:      3,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

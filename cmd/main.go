@@ -7,12 +7,12 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/sudogane/project_timegate/internal/database"
-	"github.com/sudogane/project_timegate/internal/handlers"
+	"github.com/sudogane/project_timegate/internal/router"
 	"github.com/sudogane/project_timegate/internal/server"
 )
 
 func main() {
-	err := godotenv.Load()
+	err := godotenv.Load("../.env")
 	if err != nil {
 		fmt.Println("Error loading .env: ", err)
 		return
@@ -28,7 +28,7 @@ func main() {
 	defer databaseRepository.Close()
 
 	gameServer := server.NewGameServer(databaseRepository)
-	router := handlers.NewRouter(gameServer)
+	router := router.NewRouter(gameServer)
 
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		gameServer.HandleWebsocket(w, r, router)
