@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/websocket"
 
 	"github.com/sudogane/project_timegate/internal/database"
+	"github.com/sudogane/project_timegate/internal/database/models"
 	"github.com/sudogane/project_timegate/pkg/packets"
 	"google.golang.org/protobuf/proto"
 )
@@ -35,8 +36,8 @@ func NewGameServer(db *database.Repository) *GameServer {
 	return gs
 }
 
-func (gs *GameServer) GetDB() *database.Repository {
-	return gs.db
+func (gs *GameServer) GetDB() models.Querier {
+	return gs.db.Queries
 }
 
 func (gs *GameServer) Ctx() context.Context {

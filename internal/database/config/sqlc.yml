@@ -5,12 +5,14 @@ sql:
       - "../queries/user.sql"
       - "../queries/digimon.sql"
       - "../queries/stage.sql"
-    schema: "schema.sql"
+    schema: "../migrations/"
     gen:
       go:
         package: "models"
         out: "../models/"
         sql_package: "pgx/v5"
+        emit_json_tags: true
+        emit_interface: true
         overrides:
           - db_type: "uuid"
             go_type: "github.com/google/uuid.UUID"

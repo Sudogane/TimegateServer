@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
-	"github.com/sudogane/project_timegate/internal/database"
+	"github.com/sudogane/project_timegate/internal/database/models"
 	"github.com/sudogane/project_timegate/pkg/packets"
 )
 
@@ -14,7 +14,7 @@ type GameServerInterface interface {
 	SendMessage(sessionId string, message packets.ServerPayload)
 	AddSession(session *PlayerSession)
 	RemoveSession(sessionID string)
-	GetDB() *database.Repository
+	GetDB() models.Querier
 	Ctx() context.Context
 	SendErrorMessage(sessionId string, code packets.ErrorCode)
 }

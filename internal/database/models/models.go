@@ -10,144 +10,140 @@ import (
 )
 
 type BaseDigimon struct {
-	ID          int32
-	Species     string
-	BaseHealth  int32
-	BaseAttack  int32
-	BaseDefense int32
-	BaseMana    int32
-	BaseSpeed   int32
-	Form        string
-	Attribute   string
-	Family      string
-	Element     string
+	ID          int32  `json:"id"`
+	Species     string `json:"species"`
+	BaseHealth  int32  `json:"base_health"`
+	BaseAttack  int32  `json:"base_attack"`
+	BaseDefense int32  `json:"base_defense"`
+	BaseMana    int32  `json:"base_mana"`
+	BaseSpeed   int32  `json:"base_speed"`
+	Form        string `json:"form"`
+	Attribute   string `json:"attribute"`
+	Family      string `json:"family"`
+	Element     string `json:"element"`
 }
 
 type Chapter struct {
-	ID            int32
-	ChapterName   string
-	ChapterNumber string
-	Description   pgtype.Text
-	IsUnlocked    pgtype.Bool
+	ID            int32       `json:"id"`
+	ChapterName   string      `json:"chapter_name"`
+	ChapterNumber string      `json:"chapter_number"`
+	Description   pgtype.Text `json:"description"`
+	IsUnlocked    pgtype.Bool `json:"is_unlocked"`
 }
 
 type Episode struct {
-	ID            int32
-	ChapterID     pgtype.Int4
-	EpisodeNumber int32
-	EpisodeName   string
+	ID            int32       `json:"id"`
+	ChapterID     pgtype.Int4 `json:"chapter_id"`
+	EpisodeNumber int32       `json:"episode_number"`
+	EpisodeName   string      `json:"episode_name"`
 }
 
 type Stage struct {
-	ID            int32
-	ChapterID     pgtype.Int4
-	EpisodeID     pgtype.Int4
-	StageNumber   int32
-	StageName     string
-	Description   pgtype.Text
-	DefeatStageID pgtype.Int4
-	TamerLevel    pgtype.Int4
-	DropBits      pgtype.Int4
-	DropExp       pgtype.Int4
-	DropSexp      pgtype.Int4
-	MaxWaves      pgtype.Int4
-}
-
-type StageItemDrop struct {
-	ID      int32
-	StageID pgtype.Int4
+	ID            int32       `json:"id"`
+	ChapterID     pgtype.Int4 `json:"chapter_id"`
+	EpisodeID     pgtype.Int4 `json:"episode_id"`
+	StageNumber   int32       `json:"stage_number"`
+	StageName     string      `json:"stage_name"`
+	Description   pgtype.Text `json:"description"`
+	DefeatStageID pgtype.Int4 `json:"defeat_stage_id"`
+	TamerLevel    pgtype.Int4 `json:"tamer_level"`
+	DropBits      pgtype.Int4 `json:"drop_bits"`
+	DropExp       pgtype.Int4 `json:"drop_exp"`
+	DropSexp      pgtype.Int4 `json:"drop_sexp"`
+	MaxWaves      pgtype.Int4 `json:"max_waves"`
+	StageType     pgtype.Text `json:"stage_type"`
 }
 
 type StageWafe struct {
-	ID         int32
-	StageID    pgtype.Int4
-	WaveNumber int32
+	ID         int32       `json:"id"`
+	StageID    pgtype.Int4 `json:"stage_id"`
+	WaveNumber int32       `json:"wave_number"`
 }
 
 type User struct {
-	ID           uuid.UUID
-	Username     string
-	PasswordHash string
-	CratedAt     pgtype.Timestamp
-	UpdatedAt    pgtype.Timestamp
-	Online       pgtype.Bool
+	ID           uuid.UUID        `json:"id"`
+	Username     string           `json:"username"`
+	PasswordHash string           `json:"password_hash"`
+	CratedAt     pgtype.Timestamp `json:"crated_at"`
+	UpdatedAt    pgtype.Timestamp `json:"updated_at"`
+	Online       pgtype.Bool      `json:"online"`
 }
 
 type UserChapterProgress struct {
-	UserID      uuid.UUID
-	ChapterID   int32
-	IsUnlocked  pgtype.Bool
-	IsBeaten    pgtype.Bool
-	CompletedAt pgtype.Timestamp
+	UserID      uuid.UUID        `json:"user_id"`
+	ChapterID   int32            `json:"chapter_id"`
+	IsUnlocked  pgtype.Bool      `json:"is_unlocked"`
+	IsBeaten    pgtype.Bool      `json:"is_beaten"`
+	CompletedAt pgtype.Timestamp `json:"completed_at"`
 }
 
 type UserCompletedStage struct {
-	UserID      uuid.UUID
-	StageID     int32
-	CompletedAt pgtype.Timestamp
+	UserID      uuid.UUID        `json:"user_id"`
+	StageID     int32            `json:"stage_id"`
+	CompletedAt pgtype.Timestamp `json:"completed_at"`
 }
 
 type UserDigibank struct {
-	UserID    uuid.UUID
-	DigimonID pgtype.UUID
-	BankSlot  int32
+	UserID    uuid.UUID   `json:"user_id"`
+	DigimonID pgtype.UUID `json:"digimon_id"`
+	BankSlot  int32       `json:"bank_slot"`
 }
 
 type UserDigimon struct {
-	ID            uuid.UUID
-	UserID        pgtype.UUID
-	BaseID        pgtype.Int4
-	Nickname      pgtype.Text
-	Level         pgtype.Int4
-	Exp           pgtype.Int4
-	Friendship    pgtype.Int4
-	IsStarter     pgtype.Bool
-	IsLocked      pgtype.Bool
-	CurrentHealth pgtype.Int4
-	CurrentMana   pgtype.Int4
-	Health        pgtype.Int4
-	Mana          pgtype.Int4
-	Attack        pgtype.Int4
-	Defense       pgtype.Int4
-	Speed         pgtype.Int4
-	CreatedAt     pgtype.Timestamp
+	ID            uuid.UUID        `json:"id"`
+	UserID        pgtype.UUID      `json:"user_id"`
+	BaseID        pgtype.Int4      `json:"base_id"`
+	Nickname      pgtype.Text      `json:"nickname"`
+	Level         pgtype.Int4      `json:"level"`
+	Exp           pgtype.Int4      `json:"exp"`
+	Friendship    pgtype.Int4      `json:"friendship"`
+	IsStarter     pgtype.Bool      `json:"is_starter"`
+	IsLocked      pgtype.Bool      `json:"is_locked"`
+	CurrentHealth pgtype.Int4      `json:"current_health"`
+	CurrentMana   pgtype.Int4      `json:"current_mana"`
+	Health        pgtype.Int4      `json:"health"`
+	Mana          pgtype.Int4      `json:"mana"`
+	Attack        pgtype.Int4      `json:"attack"`
+	Defense       pgtype.Int4      `json:"defense"`
+	Speed         pgtype.Int4      `json:"speed"`
+	CreatedAt     pgtype.Timestamp `json:"created_at"`
 }
 
 type UserEpisodeProgress struct {
-	UserID      uuid.UUID
-	EpisodeID   int32
-	IsUnlocked  pgtype.Bool
-	IsBeaten    pgtype.Bool
-	CompletedAt pgtype.Timestamp
+	UserID      uuid.UUID        `json:"user_id"`
+	EpisodeID   int32            `json:"episode_id"`
+	IsUnlocked  pgtype.Bool      `json:"is_unlocked"`
+	IsBeaten    pgtype.Bool      `json:"is_beaten"`
+	CompletedAt pgtype.Timestamp `json:"completed_at"`
 }
 
 type UserInventory struct {
-	ID       pgtype.Int4
-	UserID   uuid.UUID
-	ItemName string
-	Quantity pgtype.Int4
+	ID       pgtype.Int4 `json:"id"`
+	UserID   uuid.UUID   `json:"user_id"`
+	ItemName string      `json:"item_name"`
+	Quantity pgtype.Int4 `json:"quantity"`
 }
 
 type UserResource struct {
-	UserID         uuid.UUID
-	Level          pgtype.Int4
-	Exp            pgtype.Int4
-	StaminaCurrent pgtype.Int4
-	StaminaMax     pgtype.Int4
-	Bits           pgtype.Int8
-	Yen            pgtype.Int8
+	UserID         uuid.UUID   `json:"user_id"`
+	Level          pgtype.Int4 `json:"level"`
+	Exp            pgtype.Int4 `json:"exp"`
+	StaminaCurrent pgtype.Int4 `json:"stamina_current"`
+	StaminaMax     pgtype.Int4 `json:"stamina_max"`
+	Bits           pgtype.Int8 `json:"bits"`
+	Yen            pgtype.Int8 `json:"yen"`
 }
 
 type UserTeam struct {
-	UserID    uuid.UUID
-	DigimonID pgtype.UUID
-	TeamSlot  int32
+	UserID    uuid.UUID   `json:"user_id"`
+	DigimonID pgtype.UUID `json:"digimon_id"`
+	TeamSlot  int32       `json:"team_slot"`
 }
 
 type WaveEnemy struct {
-	ID         int32
-	WaveID     pgtype.Int4
-	EnemySlot  int32
-	EnemyID    pgtype.Int4
-	EnemyLevel pgtype.Int4
+	ID         int32       `json:"id"`
+	WaveID     pgtype.Int4 `json:"wave_id"`
+	EnemySlot  int32       `json:"enemy_slot"`
+	EnemyID    pgtype.Int4 `json:"enemy_id"`
+	EnemyLevel pgtype.Int4 `json:"enemy_level"`
 }

@@ -26,8 +26,8 @@ ORDER BY e.episode_number
 `
 
 type GetAvailableEpisodesByChapterIdParams struct {
-	ChapterID pgtype.Int4
-	UserID    uuid.UUID
+	ChapterID pgtype.Int4 `json:"chapter_id"`
+	UserID    uuid.UUID   `json:"user_id"`
 }
 
 func (q *Queries) GetAvailableEpisodesByChapterId(ctx context.Context, arg GetAvailableEpisodesByChapterIdParams) ([]Episode, error) {
@@ -56,7 +56,7 @@ func (q *Queries) GetAvailableEpisodesByChapterId(ctx context.Context, arg GetAv
 }
 
 const getAvailableStages = `-- name: GetAvailableStages :many
-SELECT s.id, s.chapter_id, s.episode_id, s.stage_number, s.stage_name, s.description, s.defeat_stage_id, s.tamer_level, s.drop_bits, s.drop_exp, s.drop_sexp, s.max_waves, e.episode_name, c.chapter_name
+SELECT s.id, s.chapter_id, s.episode_id, s.stage_number, s.stage_name, s.description, s.defeat_stage_id, s.tamer_level, s.drop_bits, s.drop_exp, s.drop_sexp, s.max_waves, s.stage_type, e.episode_name, c.chapter_name
 FROM stages s
 JOIN episodes e ON s.episode_id = e.id
 JOIN chapters c ON e.chapter_id = c.id
@@ -69,20 +69,21 @@ ORDER BY c.chapter_number, e.episode_number, s.stage_number
 `
 
 type GetAvailableStagesRow struct {
-	ID            int32
-	ChapterID     pgtype.Int4
-	EpisodeID     pgtype.Int4
-	StageNumber   int32
-	StageName     string
-	Description   pgtype.Text
-	DefeatStageID pgtype.Int4
-	TamerLevel    pgtype.Int4
-	DropBits      pgtype.Int4
-	DropExp       pgtype.Int4
-	DropSexp      pgtype.Int4
-	MaxWaves      pgtype.Int4
-	EpisodeName   string
-	ChapterName   string
+	ID            int32       `json:"id"`
+	ChapterID     pgtype.Int4 `json:"chapter_id"`
+	EpisodeID     pgtype.Int4 `json:"episode_id"`
+	StageNumber   int32       `json:"stage_number"`
+	StageName     string      `json:"stage_name"`
+	Description   pgtype.Text `json:"description"`
+	DefeatStageID pgtype.Int4 `json:"defeat_stage_id"`
+	TamerLevel    pgtype.Int4 `json:"tamer_level"`
+	DropBits      pgtype.Int4 `json:"drop_bits"`
+	DropExp       pgtype.Int4 `json:"drop_exp"`
+	DropSexp      pgtype.Int4 `json:"drop_sexp"`
+	MaxWaves      pgtype.Int4 `json:"max_waves"`
+	StageType     pgtype.Text `json:"stage_type"`
+	EpisodeName   string      `json:"episode_name"`
+	ChapterName   string      `json:"chapter_name"`
 }
 
 func (q *Queries) GetAvailableStages(ctx context.Context, userID uuid.UUID) ([]GetAvailableStagesRow, error) {
@@ -107,6 +108,7 @@ func (q *Queries) GetAvailableStages(ctx context.Context, userID uuid.UUID) ([]G
 			&i.DropExp,
 			&i.DropSexp,
 			&i.MaxWaves,
+			&i.StageType,
 			&i.EpisodeName,
 			&i.ChapterName,
 		); err != nil {
@@ -121,7 +123,7 @@ func (q *Queries) GetAvailableStages(ctx context.Context, userID uuid.UUID) ([]G
 }
 
 const getAvailableStagesByEpisodeId = `-- name: GetAvailableStagesByEpisodeId :many
-SELECT s.id, s.chapter_id, s.episode_id, s.stage_number, s.stage_name, s.description, s.defeat_stage_id, s.tamer_level, s.drop_bits, s.drop_exp, s.drop_sexp, s.max_waves
+SELECT s.id, s.chapter_id, s.episode_id, s.stage_number, s.stage_name, s.description, s.defeat_stage_id, s.tamer_level, s.drop_bits, s.drop_exp, s.drop_sexp, s.max_waves, s.stage_type
 FROM stages s
 WHERE s.episode_id = $1
   AND (
@@ -136,8 +138,8 @@ ORDER BY s.stage_number
 `
 
 type GetAvailableStagesByEpisodeIdParams struct {
-	EpisodeID pgtype.Int4
-	UserID    uuid.UUID
+	EpisodeID pgtype.Int4 `json:"episode_id"`
+	UserID    uuid.UUID   `json:"user_id"`
 }
 
 func (q *Queries) GetAvailableStagesByEpisodeId(ctx context.Context, arg GetAvailableStagesByEpisodeIdParams) ([]Stage, error) {
@@ -162,6 +164,7 @@ func (q *Queries) GetAvailableStagesByEpisodeId(ctx context.Context, arg GetAvai
 			&i.DropExp,
 			&i.DropSexp,
 			&i.MaxWaves,
+			&i.StageType,
 		); err != nil {
 			return nil, err
 		}
@@ -174,7 +177,7 @@ func (q *Queries) GetAvailableStagesByEpisodeId(ctx context.Context, arg GetAvai
 }
 
 const getStageById = `-- name: GetStageById :one
-SELECT s.id, s.chapter_id, s.episode_id, s.stage_number, s.stage_name, s.description, s.defeat_stage_id, s.tamer_level, s.drop_bits, s.drop_exp, s.drop_sexp, s.max_waves, e.episode_name, c.chapter_name
+SELECT s.id, s.chapter_id, s.episode_id, s.stage_number, s.stage_name, s.description, s.defeat_stage_id, s.tamer_level, s.drop_bits, s.drop_exp, s.drop_sexp, s.max_waves, s.stage_type, e.episode_name, c.chapter_name
 FROM stages s
 JOIN episodes e ON s.episode_id = e.id
 JOIN chapters c ON s.chapter_id = c.id
@@ -182,20 +185,21 @@ WHERE s.id = $1
 `
 
 type GetStageByIdRow struct {
-	ID            int32
-	ChapterID     pgtype.Int4
-	EpisodeID     pgtype.Int4
-	StageNumber   int32
-	StageName     string
-	Description   pgtype.Text
-	DefeatStageID pgtype.Int4
-	TamerLevel    pgtype.Int4
-	DropBits      pgtype.Int4
-	DropExp       pgtype.Int4
-	DropSexp      pgtype.Int4
-	MaxWaves      pgtype.Int4
-	EpisodeName   string
-	ChapterName   string
+	ID            int32       `json:"id"`
+	ChapterID     pgtype.Int4 `json:"chapter_id"`
+	EpisodeID     pgtype.Int4 `json:"episode_id"`
+	StageNumber   int32       `json:"stage_number"`
+	StageName     string      `json:"stage_name"`
+	Description   pgtype.Text `json:"description"`
+	DefeatStageID pgtype.Int4 `json:"defeat_stage_id"`
+	TamerLevel    pgtype.Int4 `json:"tamer_level"`
+	DropBits      pgtype.Int4 `json:"drop_bits"`
+	DropExp       pgtype.Int4 `json:"drop_exp"`
+	DropSexp      pgtype.Int4 `json:"drop_sexp"`
+	MaxWaves      pgtype.Int4 `json:"max_waves"`
+	StageType     pgtype.Text `json:"stage_type"`
+	EpisodeName   string      `json:"episode_name"`
+	ChapterName   string      `json:"chapter_name"`
 }
 
 func (q *Queries) GetStageById(ctx context.Context, id int32) (GetStageByIdRow, error) {
@@ -214,6 +218,7 @@ func (q *Queries) GetStageById(ctx context.Context, id int32) (GetStageByIdRow, 
 		&i.DropExp,
 		&i.DropSexp,
 		&i.MaxWaves,
+		&i.StageType,
 		&i.EpisodeName,
 		&i.ChapterName,
 	)
@@ -230,25 +235,25 @@ ORDER BY sw.wave_number, we.enemy_slot
 `
 
 type GetStageWavesRow struct {
-	ID          int32
-	StageID     pgtype.Int4
-	WaveNumber  int32
-	ID_2        pgtype.Int4
-	WaveID      pgtype.Int4
-	EnemySlot   pgtype.Int4
-	EnemyID     pgtype.Int4
-	EnemyLevel  pgtype.Int4
-	ID_3        pgtype.Int4
-	Species     pgtype.Text
-	BaseHealth  pgtype.Int4
-	BaseAttack  pgtype.Int4
-	BaseDefense pgtype.Int4
-	BaseMana    pgtype.Int4
-	BaseSpeed   pgtype.Int4
-	Form        pgtype.Text
-	Attribute   pgtype.Text
-	Family      pgtype.Text
-	Element     pgtype.Text
+	ID          int32       `json:"id"`
+	StageID     pgtype.Int4 `json:"stage_id"`
+	WaveNumber  int32       `json:"wave_number"`
+	ID_2        pgtype.Int4 `json:"id_2"`
+	WaveID      pgtype.Int4 `json:"wave_id"`
+	EnemySlot   pgtype.Int4 `json:"enemy_slot"`
+	EnemyID     pgtype.Int4 `json:"enemy_id"`
+	EnemyLevel  pgtype.Int4 `json:"enemy_level"`
+	ID_3        pgtype.Int4 `json:"id_3"`
+	Species     pgtype.Text `json:"species"`
+	BaseHealth  pgtype.Int4 `json:"base_health"`
+	BaseAttack  pgtype.Int4 `json:"base_attack"`
+	BaseDefense pgtype.Int4 `json:"base_defense"`
+	BaseMana    pgtype.Int4 `json:"base_mana"`
+	BaseSpeed   pgtype.Int4 `json:"base_speed"`
+	Form        pgtype.Text `json:"form"`
+	Attribute   pgtype.Text `json:"attribute"`
+	Family      pgtype.Text `json:"family"`
+	Element     pgtype.Text `json:"element"`
 }
 
 func (q *Queries) GetStageWaves(ctx context.Context, id int32) ([]GetStageWavesRow, error) {

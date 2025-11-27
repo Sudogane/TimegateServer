@@ -17,10 +17,10 @@ INSERT INTO user_digimon (user_id, base_id, is_starter, is_locked) VALUES ($1, $
 `
 
 type CreateUserDigimonParams struct {
-	UserID    pgtype.UUID
-	BaseID    pgtype.Int4
-	IsStarter pgtype.Bool
-	IsLocked  pgtype.Bool
+	UserID    pgtype.UUID `json:"user_id"`
+	BaseID    pgtype.Int4 `json:"base_id"`
+	IsStarter pgtype.Bool `json:"is_starter"`
+	IsLocked  pgtype.Bool `json:"is_locked"`
 }
 
 func (q *Queries) CreateUserDigimon(ctx context.Context, arg CreateUserDigimonParams) (UserDigimon, error) {
@@ -182,8 +182,8 @@ SELECT id, user_id, base_id, nickname, level, exp, friendship, is_starter, is_lo
 `
 
 type GetUserDigimonParams struct {
-	ID     uuid.UUID
-	UserID pgtype.UUID
+	ID     uuid.UUID   `json:"id"`
+	UserID pgtype.UUID `json:"user_id"`
 }
 
 func (q *Queries) GetUserDigimon(ctx context.Context, arg GetUserDigimonParams) (UserDigimon, error) {

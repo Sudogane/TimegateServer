@@ -17,7 +17,7 @@ type AuthenticationHandler struct {
 func NewAuthenticationHandler(server server.GameServerInterface) *AuthenticationHandler {
 	return &AuthenticationHandler{
 		BaseHandler: *NewBaseHandler(server),
-		userService: services.NewUserService(server),
+		userService: services.NewUserService(server.GetDB()),
 	}
 }
 
@@ -26,16 +26,16 @@ func (h *AuthenticationHandler) Handle(session *server.PlayerSession, msg *packe
 
 	switch packet.GetType() {
 	case packets.AuthenticationType_LOGIN:
-		onUserLogin(h, session, packet)
+		h.handleUserLogin(session, packet)
 	case packets.AuthenticationType_REGISTER:
-		onUserRegister(h, session, packet)
+		h.handleUserRegister(session, packet)
 	}
 
 	return nil
 }
 
-func onUserLogin(h *AuthenticationHandler, session *server.PlayerSession, loginRequestData *packets.AuthenticationRequest) {
-	if err := validateLoginData(loginRequestData, h.userService); err != nil {
+func (h *AuthenticationHandler) handleUserLogin(session *server.PlayerSession, loginRequestData *packets.AuthenticationRequest) {
+	if err := h.validateLoginData(loginRequestData, h.userService); err != nil {
 		h.SendError(session, packets.ErrorCode_INVALID_CREDENTIALS)
 		return
 	}
@@ -57,7 +57,7 @@ func onUserLogin(h *AuthenticationHandler, session *server.PlayerSession, loginR
 	h.Send(session, responsePacket)
 }
 
-func validateLoginData(loginData *packets.AuthenticationRequest, userService *services.UserService) error {
+func (h *AuthenticationHandler) validateLoginData(loginData *packets.AuthenticationRequest, userService *services.UserService) error {
 	username := loginData.GetUsername()
 	password := loginData.GetPassword()
 
@@ -83,8 +83,8 @@ func validateLoginData(loginData *packets.AuthenticationRequest, userService *se
 	return nil
 }
 
-func onUserRegister(h *AuthenticationHandler, session *server.PlayerSession, registerRequestData *packets.AuthenticationRequest) {
-	if code, err := validateRegisterData(registerRequestData, h.userService); err != nil {
+func (h *AuthenticationHandler) handleUserRegister(session *server.PlayerSession, registerRequestData *packets.AuthenticationRequest) {
+	if code, err := h.validateRegisterData(registerRequestData, h.userService); err != nil {
 		h.SendError(session, code)
 		return
 	}
@@ -112,7 +112,7 @@ func onUserRegister(h *AuthenticationHandler, session *server.PlayerSession, reg
 	h.Send(session, responsePacket)
 }
 
-func validateRegisterData(registerData *packets.AuthenticationRequest, userService *services.UserService) (packets.ErrorCode, error) {
+func (h *AuthenticationHandler) validateRegisterData(registerData *packets.AuthenticationRequest, userService *services.UserService) (packets.ErrorCode, error) {
 	username := registerData.GetUsername()
 	password := registerData.GetPassword()
 

@@ -16,7 +16,7 @@ type StagesHandler struct {
 func NewStagesHandler(server server.GameServerInterface) *StagesHandler {
 	return &StagesHandler{
 		BaseHandler: *NewBaseHandler(server),
-		userService: services.NewUserService(server),
+		userService: services.NewUserService(server.GetDB()),
 	}
 }
 
@@ -76,7 +76,6 @@ func onGetUserEpisodesByChapter(h *StagesHandler, session *server.PlayerSession,
 		episodeData[i] = &packets.EpisodeData{
 			EpisodeId:     episode.ID,
 			EpisodeNumber: episode.EpisodeNumber,
-			EpisodeName:   episode.EpisodeName,
 		}
 	}
 

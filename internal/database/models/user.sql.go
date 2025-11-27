@@ -20,9 +20,9 @@ DO UPDATE SET digimon_id = EXCLUDED.digimon_id
 `
 
 type AddDigimonToTeamParams struct {
-	UserID    uuid.UUID
-	DigimonID pgtype.UUID
-	TeamSlot  int32
+	UserID    uuid.UUID   `json:"user_id"`
+	DigimonID pgtype.UUID `json:"digimon_id"`
+	TeamSlot  int32       `json:"team_slot"`
 }
 
 func (q *Queries) AddDigimonToTeam(ctx context.Context, arg AddDigimonToTeamParams) error {
@@ -37,8 +37,8 @@ WHERE user_id = $1
 `
 
 type AddUserBitsParams struct {
-	UserID uuid.UUID
-	Bits   pgtype.Int8
+	UserID uuid.UUID   `json:"user_id"`
+	Bits   pgtype.Int8 `json:"bits"`
 }
 
 func (q *Queries) AddUserBits(ctx context.Context, arg AddUserBitsParams) error {
@@ -57,13 +57,13 @@ ORDER BY e.chapter_id
 `
 
 type CheckUserChapterCompletionParams struct {
-	UserID    uuid.UUID
-	ChapterID pgtype.Int4
+	UserID    uuid.UUID   `json:"user_id"`
+	ChapterID pgtype.Int4 `json:"chapter_id"`
 }
 
 type CheckUserChapterCompletionRow struct {
-	TotalStages     int64
-	CompletedStages int64
+	TotalStages     int64 `json:"total_stages"`
+	CompletedStages int64 `json:"completed_stages"`
 }
 
 func (q *Queries) CheckUserChapterCompletion(ctx context.Context, arg CheckUserChapterCompletionParams) (CheckUserChapterCompletionRow, error) {
@@ -79,8 +79,8 @@ WHERE user_id = $1 AND team_slot = $2
 `
 
 type ClearTeamSlotParams struct {
-	UserID   uuid.UUID
-	TeamSlot int32
+	UserID   uuid.UUID `json:"user_id"`
+	TeamSlot int32     `json:"team_slot"`
 }
 
 func (q *Queries) ClearTeamSlot(ctx context.Context, arg ClearTeamSlotParams) error {
@@ -95,8 +95,8 @@ ON CONFLICT (user_id, stage_id) DO NOTHING
 `
 
 type CompleteStageParams struct {
-	UserID  uuid.UUID
-	StageID int32
+	UserID  uuid.UUID `json:"user_id"`
+	StageID int32     `json:"stage_id"`
 }
 
 func (q *Queries) CompleteStage(ctx context.Context, arg CompleteStageParams) error {
@@ -111,8 +111,8 @@ WHERE user_id = $1 AND chapter_id = $2
 `
 
 type CompleteUserChapterParams struct {
-	UserID    uuid.UUID
-	ChapterID int32
+	UserID    uuid.UUID `json:"user_id"`
+	ChapterID int32     `json:"chapter_id"`
 }
 
 func (q *Queries) CompleteUserChapter(ctx context.Context, arg CompleteUserChapterParams) error {
@@ -137,8 +137,8 @@ INSERT INTO users (
 `
 
 type CreateUserParams struct {
-	Username     string
-	PasswordHash string
+	Username     string `json:"username"`
+	PasswordHash string `json:"password_hash"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -225,34 +225,34 @@ ORDER BY ub.bank_slot
 `
 
 type GetUserDigibankRow struct {
-	ID            uuid.UUID
-	UserID        pgtype.UUID
-	BaseID        pgtype.Int4
-	Nickname      pgtype.Text
-	Level         pgtype.Int4
-	Exp           pgtype.Int4
-	Friendship    pgtype.Int4
-	IsStarter     pgtype.Bool
-	IsLocked      pgtype.Bool
-	CurrentHealth pgtype.Int4
-	CurrentMana   pgtype.Int4
-	Health        pgtype.Int4
-	Mana          pgtype.Int4
-	Attack        pgtype.Int4
-	Defense       pgtype.Int4
-	Speed         pgtype.Int4
-	CreatedAt     pgtype.Timestamp
-	ID_2          int32
-	Species       string
-	BaseHealth    int32
-	BaseAttack    int32
-	BaseDefense   int32
-	BaseMana      int32
-	BaseSpeed     int32
-	Form          string
-	Attribute     string
-	Family        string
-	Element       string
+	ID            uuid.UUID        `json:"id"`
+	UserID        pgtype.UUID      `json:"user_id"`
+	BaseID        pgtype.Int4      `json:"base_id"`
+	Nickname      pgtype.Text      `json:"nickname"`
+	Level         pgtype.Int4      `json:"level"`
+	Exp           pgtype.Int4      `json:"exp"`
+	Friendship    pgtype.Int4      `json:"friendship"`
+	IsStarter     pgtype.Bool      `json:"is_starter"`
+	IsLocked      pgtype.Bool      `json:"is_locked"`
+	CurrentHealth pgtype.Int4      `json:"current_health"`
+	CurrentMana   pgtype.Int4      `json:"current_mana"`
+	Health        pgtype.Int4      `json:"health"`
+	Mana          pgtype.Int4      `json:"mana"`
+	Attack        pgtype.Int4      `json:"attack"`
+	Defense       pgtype.Int4      `json:"defense"`
+	Speed         pgtype.Int4      `json:"speed"`
+	CreatedAt     pgtype.Timestamp `json:"created_at"`
+	ID_2          int32            `json:"id_2"`
+	Species       string           `json:"species"`
+	BaseHealth    int32            `json:"base_health"`
+	BaseAttack    int32            `json:"base_attack"`
+	BaseDefense   int32            `json:"base_defense"`
+	BaseMana      int32            `json:"base_mana"`
+	BaseSpeed     int32            `json:"base_speed"`
+	Form          string           `json:"form"`
+	Attribute     string           `json:"attribute"`
+	Family        string           `json:"family"`
+	Element       string           `json:"element"`
 }
 
 func (q *Queries) GetUserDigibank(ctx context.Context, userID uuid.UUID) ([]GetUserDigibankRow, error) {
@@ -314,35 +314,35 @@ ORDER BY ut.team_slot
 `
 
 type GetUserTeamRow struct {
-	TeamSlot      int32
-	ID            uuid.UUID
-	UserID        pgtype.UUID
-	BaseID        pgtype.Int4
-	Nickname      pgtype.Text
-	Level         pgtype.Int4
-	Exp           pgtype.Int4
-	Friendship    pgtype.Int4
-	IsStarter     pgtype.Bool
-	IsLocked      pgtype.Bool
-	CurrentHealth pgtype.Int4
-	CurrentMana   pgtype.Int4
-	Health        pgtype.Int4
-	Mana          pgtype.Int4
-	Attack        pgtype.Int4
-	Defense       pgtype.Int4
-	Speed         pgtype.Int4
-	CreatedAt     pgtype.Timestamp
-	ID_2          int32
-	Species       string
-	BaseHealth    int32
-	BaseAttack    int32
-	BaseDefense   int32
-	BaseMana      int32
-	BaseSpeed     int32
-	Form          string
-	Attribute     string
-	Family        string
-	Element       string
+	TeamSlot      int32            `json:"team_slot"`
+	ID            uuid.UUID        `json:"id"`
+	UserID        pgtype.UUID      `json:"user_id"`
+	BaseID        pgtype.Int4      `json:"base_id"`
+	Nickname      pgtype.Text      `json:"nickname"`
+	Level         pgtype.Int4      `json:"level"`
+	Exp           pgtype.Int4      `json:"exp"`
+	Friendship    pgtype.Int4      `json:"friendship"`
+	IsStarter     pgtype.Bool      `json:"is_starter"`
+	IsLocked      pgtype.Bool      `json:"is_locked"`
+	CurrentHealth pgtype.Int4      `json:"current_health"`
+	CurrentMana   pgtype.Int4      `json:"current_mana"`
+	Health        pgtype.Int4      `json:"health"`
+	Mana          pgtype.Int4      `json:"mana"`
+	Attack        pgtype.Int4      `json:"attack"`
+	Defense       pgtype.Int4      `json:"defense"`
+	Speed         pgtype.Int4      `json:"speed"`
+	CreatedAt     pgtype.Timestamp `json:"created_at"`
+	ID_2          int32            `json:"id_2"`
+	Species       string           `json:"species"`
+	BaseHealth    int32            `json:"base_health"`
+	BaseAttack    int32            `json:"base_attack"`
+	BaseDefense   int32            `json:"base_defense"`
+	BaseMana      int32            `json:"base_mana"`
+	BaseSpeed     int32            `json:"base_speed"`
+	Form          string           `json:"form"`
+	Attribute     string           `json:"attribute"`
+	Family        string           `json:"family"`
+	Element       string           `json:"element"`
 }
 
 func (q *Queries) GetUserTeam(ctx context.Context, userID uuid.UUID) ([]GetUserTeamRow, error) {
@@ -407,12 +407,12 @@ ORDER BY c.chapter_number
 `
 
 type GetUserUnlockedChaptersRow struct {
-	ID            int32
-	ChapterName   string
-	ChapterNumber string
-	Description   pgtype.Text
-	IsUnlocked    pgtype.Bool
-	IsBeaten      bool
+	ID            int32       `json:"id"`
+	ChapterName   string      `json:"chapter_name"`
+	ChapterNumber string      `json:"chapter_number"`
+	Description   pgtype.Text `json:"description"`
+	IsUnlocked    pgtype.Bool `json:"is_unlocked"`
+	IsBeaten      bool        `json:"is_beaten"`
 }
 
 func (q *Queries) GetUserUnlockedChapters(ctx context.Context, userID uuid.UUID) ([]GetUserUnlockedChaptersRow, error) {
@@ -450,19 +450,19 @@ WHERE u.id = $1
 `
 
 type GetUserWithResourcesRow struct {
-	ID             uuid.UUID
-	Username       string
-	PasswordHash   string
-	CratedAt       pgtype.Timestamp
-	UpdatedAt      pgtype.Timestamp
-	Online         pgtype.Bool
-	UserID         pgtype.UUID
-	Level          pgtype.Int4
-	Exp            pgtype.Int4
-	StaminaCurrent pgtype.Int4
-	StaminaMax     pgtype.Int4
-	Bits           pgtype.Int8
-	Yen            pgtype.Int8
+	ID             uuid.UUID        `json:"id"`
+	Username       string           `json:"username"`
+	PasswordHash   string           `json:"password_hash"`
+	CratedAt       pgtype.Timestamp `json:"crated_at"`
+	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
+	Online         pgtype.Bool      `json:"online"`
+	UserID         pgtype.UUID      `json:"user_id"`
+	Level          pgtype.Int4      `json:"level"`
+	Exp            pgtype.Int4      `json:"exp"`
+	StaminaCurrent pgtype.Int4      `json:"stamina_current"`
+	StaminaMax     pgtype.Int4      `json:"stamina_max"`
+	Bits           pgtype.Int8      `json:"bits"`
+	Yen            pgtype.Int8      `json:"yen"`
 }
 
 func (q *Queries) GetUserWithResources(ctx context.Context, id uuid.UUID) (GetUserWithResourcesRow, error) {
@@ -492,8 +492,8 @@ WHERE user_id = $1 AND digimon_id = $2
 `
 
 type RemoveDigimonFromTeamParams struct {
-	UserID    uuid.UUID
-	DigimonID pgtype.UUID
+	UserID    uuid.UUID   `json:"user_id"`
+	DigimonID pgtype.UUID `json:"digimon_id"`
 }
 
 func (q *Queries) RemoveDigimonFromTeam(ctx context.Context, arg RemoveDigimonFromTeamParams) error {
@@ -509,9 +509,9 @@ DO UPDATE SET is_unlocked = true
 `
 
 type UnlockUserChapterParams struct {
-	UserID     uuid.UUID
-	ChapterID  int32
-	IsUnlocked pgtype.Bool
+	UserID     uuid.UUID   `json:"user_id"`
+	ChapterID  int32       `json:"chapter_id"`
+	IsUnlocked pgtype.Bool `json:"is_unlocked"`
 }
 
 func (q *Queries) UnlockUserChapter(ctx context.Context, arg UnlockUserChapterParams) error {
