@@ -25,15 +25,15 @@ func (h *StagesHandler) Handle(session *server.PlayerSession, msg *packets.FromC
 
 	switch packetType {
 	case packets.PacketType_CHAPTER_DATA_REQUEST:
-		onGetUserChapters(h, session)
+		h.onGetUserChapters(session)
 	case packets.PacketType_EPISODES_BY_CHAPTER_REQUEST:
-		onGetUserEpisodesByChapter(h, session, msg.GetEpisodesByChapterRequest().ChapterId)
+		h.onGetUserEpisodesByChapter(session, msg.GetEpisodesByChapterRequest().ChapterId)
 	}
 
 	return nil
 }
 
-func onGetUserChapters(h *StagesHandler, session *server.PlayerSession) {
+func (h *StagesHandler) onGetUserChapters(session *server.PlayerSession) {
 	chapters, err := h.userService.GetUnlockedChapters(session.PlayerId)
 	if err != nil {
 		fmt.Println("failed to get unlocked chapters: ", err)
@@ -60,7 +60,7 @@ func onGetUserChapters(h *StagesHandler, session *server.PlayerSession) {
 	h.Send(session, response)
 }
 
-func onGetUserEpisodesByChapter(h *StagesHandler, session *server.PlayerSession, chapterId int32) {
+func (h *StagesHandler) onGetUserEpisodesByChapter(session *server.PlayerSession, chapterId int32) {
 	if chapterId == 0 {
 		return
 	}
