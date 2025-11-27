@@ -6,7 +6,9 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/redis/go-redis/v9"
 	"github.com/sudogane/project_timegate/internal/database"
+	"github.com/sudogane/project_timegate/internal/database/cache"
 	"github.com/sudogane/project_timegate/internal/router"
 	"github.com/sudogane/project_timegate/internal/server"
 )
@@ -27,7 +29,14 @@ func main() {
 	}
 	defer databaseRepository.Close()
 
-	gameServer := server.NewGameServer(databaseRepository)
+	rdb := cache.NewRedisClient(&redis.Options{
+		Addr:     os.Getenv("REDIS_ADDR"),
+		Username: os.Getenv("REDIS_USR"),
+		Password: os.Getenv("REDIS_PWD"),
+		DB:       0,
+	})
+
+	gameServer := server.NewGameServer(databaseRepository, rdb)
 	router := router.NewRouter(gameServer)
 
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {

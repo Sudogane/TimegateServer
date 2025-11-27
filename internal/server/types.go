@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"github.com/sudogane/project_timegate/internal/database/cache"
 	"github.com/sudogane/project_timegate/internal/database/models"
 	"github.com/sudogane/project_timegate/pkg/packets"
 )
@@ -14,7 +15,8 @@ type GameServerInterface interface {
 	SendMessage(sessionId string, message packets.ServerPayload)
 	AddSession(session *PlayerSession)
 	RemoveSession(sessionID string)
-	GetDB() models.Querier
+	GetDB() *models.Queries
+	GetRDB() *cache.RedisClient
 	Ctx() context.Context
 	SendErrorMessage(sessionId string, code packets.ErrorCode)
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/websocket"
 
 	"github.com/sudogane/project_timegate/internal/database"
+	"github.com/sudogane/project_timegate/internal/database/cache"
 	"github.com/sudogane/project_timegate/internal/database/models"
 	"github.com/sudogane/project_timegate/pkg/packets"
 	"google.golang.org/protobuf/proto"
@@ -19,6 +20,7 @@ type GameServer struct {
 	sessions map[string]*PlayerSession
 	mutex    sync.RWMutex
 	db       *database.Repository
+	rdb      *cache.RedisClient
 }
 
 var upgrader = websocket.Upgrader{
@@ -27,17 +29,22 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
-func NewGameServer(db *database.Repository) *GameServer {
+func NewGameServer(db *database.Repository, rdb *cache.RedisClient) *GameServer {
 	gs := &GameServer{
 		sessions: make(map[string]*PlayerSession),
 		db:       db,
+		rdb:      rdb,
 	}
 
 	return gs
 }
 
-func (gs *GameServer) GetDB() models.Querier {
+func (gs *GameServer) GetDB() *models.Queries {
 	return gs.db.Queries
+}
+
+func (gs *GameServer) GetRDB() *cache.RedisClient {
+	return gs.rdb
 }
 
 func (gs *GameServer) Ctx() context.Context {

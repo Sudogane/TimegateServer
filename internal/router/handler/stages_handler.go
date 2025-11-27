@@ -16,7 +16,7 @@ type StagesHandler struct {
 func NewStagesHandler(server server.GameServerInterface) *StagesHandler {
 	return &StagesHandler{
 		BaseHandler: *NewBaseHandler(server),
-		userService: services.NewUserService(server.GetDB()),
+		userService: services.NewUserService(server),
 	}
 }
 

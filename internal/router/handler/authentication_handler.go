@@ -17,7 +17,7 @@ type AuthenticationHandler struct {
 func NewAuthenticationHandler(server server.GameServerInterface) *AuthenticationHandler {
 	return &AuthenticationHandler{
 		BaseHandler: *NewBaseHandler(server),
-		userService: services.NewUserService(server.GetDB()),
+		userService: services.NewUserService(server),
 	}
 }
 
