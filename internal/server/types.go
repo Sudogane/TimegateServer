@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
@@ -31,4 +32,13 @@ type PlayerSession struct {
 	SendChan chan *packets.FromServerToClient
 
 	PlayerId uuid.UUID
+}
+
+func (s *PlayerSession) Log(messageType string, message string) {
+	var playerId string
+	if s.PlayerId != uuid.Nil {
+		playerId = s.PlayerId.String()
+	}
+
+	fmt.Printf("[%s] %s: %s\n", playerId, messageType, message)
 }

@@ -1,9 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/redis/go-redis/v9"
@@ -13,22 +17,33 @@ import (
 	"github.com/sudogane/project_timegate/internal/server"
 )
 
-func main() {
+func loadEnv() error {
 	err := godotenv.Load("../.env")
 	if err != nil {
-		fmt.Println("Error loading .env: ", err)
-		return
+		return err
+	}
+	return nil
+}
+
+func startDatabase() (*database.Repository, error) {
+	databaseString := os.Getenv("POSTGRES_DATABASE_URL")
+	if databaseString == "" {
+		return nil, fmt.Errorf("POSTGRES_DATABASE_URL is not set")
 	}
 
-	databaseString := os.Getenv("POSTGRES_DATABASE_URL")
+	fmt.Println("Connecting to database")
 	databaseRepository, err := database.NewRepository(databaseString)
 
 	if err != nil {
-		fmt.Println("database err: ", err)
-		return
+		return nil, err
 	}
-	defer databaseRepository.Close()
 
+	fmt.Println("Connected to database")
+	return databaseRepository, nil
+}
+
+func startRedisCache() *cache.RedisClient {
+	fmt.Println("Connecting to redis")
 	rdb := cache.NewRedisClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_ADDR"),
 		Username: os.Getenv("REDIS_USR"),
@@ -36,15 +51,66 @@ func main() {
 		DB:       0,
 	})
 
-	gameServer := server.NewGameServer(databaseRepository, rdb)
+	fmt.Println("Connected to redis")
+	return rdb
+}
+
+func main() {
+	fmt.Println("Starting Server")
+
+	err := loadEnv()
+	if err != nil {
+		fmt.Println("Error loading .env: ", err)
+		return
+	}
+
+	databaseRepository, err := startDatabase()
+	if err != nil {
+		fmt.Println("Error starting database: ", err)
+		return
+	}
+	defer databaseRepository.Close()
+
+	redisDb := startRedisCache()
+	defer redisDb.Close()
+
+	gameServer := server.NewGameServer(databaseRepository, redisDb)
 	router := router.NewRouter(gameServer)
+
+	// Gracefull Shutdown
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+
+	server := &http.Server{
+		Addr:         ":" + os.Getenv("PORT"),
+		Handler:      nil,
+		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 15 * time.Second,
+		IdleTimeout:  60 * time.Second,
+	}
 
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		gameServer.HandleWebsocket(w, r, router)
 	})
 
-	err = http.ListenAndServe(":8888", nil)
-	if err != nil {
-		fmt.Println(err)
+	go func() {
+		fmt.Printf("WebSocket server listening on ws://localhost:%s/ws\n", os.Getenv("PORT"))
+
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			fmt.Println("Error starting server: ", err)
+			stop <- os.Interrupt
+		}
+	}()
+
+	// Wait for shutdown
+	<-stop
+	fmt.Println("Shutting down server...")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := server.Shutdown(ctx); err != nil {
+		fmt.Println("Error shutting down server: ", err)
 	}
+
+	fmt.Println("Server shut down")
 }

@@ -78,11 +78,11 @@ func (gs *GameServer) GetSession(sessionId string) *PlayerSession {
 }
 
 func (gs *GameServer) HandleWebsocket(w http.ResponseWriter, r *http.Request, router RouterInterface) {
-	fmt.Println("Nova conexão recebida")
+	fmt.Println("New Websocket connection received")
 	conn, err := upgrader.Upgrade(w, r, nil)
 
 	if err != nil {
-		fmt.Println("Erro ao upgradear websocket")
+		fmt.Println("Error upgrading websocket")
 		return
 	}
 
@@ -114,7 +114,7 @@ func (gs *GameServer) ReadLoop(session *PlayerSession, router RouterInterface) {
 		if messageType == websocket.BinaryMessage {
 			fromClient := &packets.FromClientToServer{}
 			if err := proto.Unmarshal(data, fromClient); err != nil {
-				fmt.Println("Error unmarshaling proto", err)
+				session.Log("ERROR", "Error unmarshaling proto"+err.Error())
 				continue
 			}
 
@@ -133,26 +133,26 @@ func (gs *GameServer) WriteLoop(session *PlayerSession) {
 		writer, err := session.Conn.NextWriter(websocket.BinaryMessage)
 
 		if err != nil {
-			fmt.Println("Error creating next writer")
+			session.Log("ERROR", "Error creating next writer")
 			return
 		}
 
 		data, err := proto.Marshal(packet)
 		if err != nil {
-			fmt.Println("Error marshaling proto")
+			session.Log("ERROR", "Error marshaling proto")
 			return
 		}
 
 		_, err = writer.Write(data)
 		if err != nil {
-			fmt.Println("Error writing data")
+			session.Log("ERROR", "Error writing data")
 			return
 		}
 
 		writer.Write([]byte{'\n'})
 
 		if err := writer.Close(); err != nil {
-			fmt.Println("Error closing writer")
+			session.Log("ERROR", "Error closing writer")
 			return
 		}
 	}

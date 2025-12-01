@@ -93,6 +93,7 @@ func (h *AuthenticationHandler) handleUserRegister(session *server.PlayerSession
 	user, err := h.userService.CreateUserWithResources(registerRequestData.GetUsername(), hashedPassword)
 	if err != nil {
 		h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)
+		session.Log("ERROR", err.Error())
 		return
 	}
 

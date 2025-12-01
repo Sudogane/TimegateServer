@@ -15,36 +15,40 @@ type Repository struct {
 	DB      *pgxpool.Pool
 }
 
+const (
+	MAX_CONNECTIONS             = 50
+	MIN_CONNECTIONS             = 10
+	MAX_CONN_LIFETIME           = 30 * time.Minute
+	MAX_CONN_IDLE_TIME          = 5 * time.Minute
+	HEALTH_CHECK_PERIOD         = 1 * time.Minute
+	CONNECT_TIMEOUT             = 5 * time.Second
+	IDLE_IN_TRANSACTION_TIMEOUT = "10000"
+)
+
 func NewRepository(connString string) (*Repository, error) {
 	config, err := pgxpool.ParseConfig(connString)
-
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse connection string: %v", err)
 	}
 
-	config.MaxConns = 50
-	config.MinConns = 10
-	config.MaxConnLifetime = 30 * time.Minute
-	config.MaxConnIdleTime = 5 * time.Minute
-	config.HealthCheckPeriod = 1 * time.Minute
-	config.ConnConfig.ConnectTimeout = 5 * time.Second
-	config.ConnConfig.RuntimeParams["idle_in_transaction_session_timeout"] = "10000"
+	config.MaxConns = MAX_CONNECTIONS
+	config.MinConns = MIN_CONNECTIONS
+	config.MaxConnLifetime = MAX_CONN_LIFETIME
+	config.MaxConnIdleTime = MAX_CONN_IDLE_TIME
+	config.HealthCheckPeriod = HEALTH_CHECK_PERIOD
+	config.ConnConfig.ConnectTimeout = CONNECT_TIMEOUT
+	config.ConnConfig.RuntimeParams["idle_in_transaction_session_timeout"] = IDLE_IN_TRANSACTION_TIMEOUT
 
 	pool, err := pgxpool.NewWithConfig(context.Background(), config)
-
 	if err != nil {
 		return nil, fmt.Errorf("unable to create new pool with config: %v", err)
 	}
 
-	// Test connection
 	if err := pool.Ping(context.Background()); err != nil {
 		return nil, fmt.Errorf("unable to ping database: %v", err)
-	} else {
-		fmt.Println("Database pinged")
 	}
 
 	queries := models.New(pool)
-
 	return &Repository{
 		Queries: queries,
 		DB:      pool,
@@ -63,7 +67,6 @@ func (r *Repository) CreateUserWithResources(ctx context.Context, username, pass
 	defer tx.Rollback(ctx)
 
 	qtx := r.Queries.WithTx(tx)
-
 	user, err := qtx.CreateUser(ctx, models.CreateUserParams{Username: username, PasswordHash: passwordHash})
 	if err != nil {
 		return nil, err
@@ -86,6 +89,5 @@ func (r *Repository) CreateUserWithResources(ctx context.Context, username, pass
 	if err := tx.Commit(ctx); err != nil {
 		return nil, err
 	}
-
 	return &user, nil
 }
