@@ -3,7 +3,9 @@
 # Dev Note: No test implemented yet.
 
 name: Go
-
+permissions:
+  contents: read
+  
 on:
   push:
     branches: [ "main" ]
