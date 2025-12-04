@@ -16,6 +16,12 @@ CREATE TABLE IF NOT EXISTS base_digimon (
 
 INSERT INTO base_digimon(species, base_health, base_attack, base_defense, base_mana, base_speed, form, attribute, family, element) 
 VALUES ('Morphomon', 100, 100, 100, 100, 100, 'Rookie', 'Vaccine', 'Nature Spirits', 'Light');
+
+INSERT INTO base_digimon(species, base_health, base_attack, base_defense, base_mana, base_speed, form, attribute, family, element) 
+VALUES ('Chronomon: Holy Mode', 999999, 999999, 999999, 999999, 999999, 'Ultimate', 'Vaccine', 'Virus Busters', 'Light');
+
+INSERT INTO base_digimon(species, base_health, base_attack, base_defense, base_mana, base_speed, form, attribute, family, element) 
+VALUES ('Monodramon', 150, 120, 130, 100, 100, 'Rookie', 'Vaccine', 'Dragon''s Roar', 'Fire');
 -- +goose StatementEnd
 
 -- +goose Down
