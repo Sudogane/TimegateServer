@@ -108,6 +108,7 @@ func (h *AuthenticationHandler) handleUserRegister(session *server.PlayerSession
 		StaminaCurrent: resources.StaminaCurrent.Int32,
 		StaminaMax:     resources.StaminaMax.Int32,
 	}
+	session.PlayerId = user.ID
 
 	responsePacket := packets.NewAuthenticationResponse("user access token", userData)
 	h.Send(session, responsePacket)

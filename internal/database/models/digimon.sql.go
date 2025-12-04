@@ -210,3 +210,32 @@ func (q *Queries) GetUserDigimon(ctx context.Context, arg GetUserDigimonParams) 
 	)
 	return i, err
 }
+
+const getUserDigimonByStarterFlag = `-- name: GetUserDigimonByStarterFlag :one
+SELECT id, user_id, base_id, nickname, level, exp, friendship, is_starter, is_locked, current_health, current_mana, health, mana, attack, defense, speed, created_at FROM user_digimon WHERE user_id = $1 AND is_starter = true LIMIT 1
+`
+
+func (q *Queries) GetUserDigimonByStarterFlag(ctx context.Context, userID pgtype.UUID) (UserDigimon, error) {
+	row := q.db.QueryRow(ctx, getUserDigimonByStarterFlag, userID)
+	var i UserDigimon
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.BaseID,
+		&i.Nickname,
+		&i.Level,
+		&i.Exp,
+		&i.Friendship,
+		&i.IsStarter,
+		&i.IsLocked,
+		&i.CurrentHealth,
+		&i.CurrentMana,
+		&i.Health,
+		&i.Mana,
+		&i.Attack,
+		&i.Defense,
+		&i.Speed,
+		&i.CreatedAt,
+	)
+	return i, err
+}

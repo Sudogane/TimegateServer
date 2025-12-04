@@ -169,3 +169,32 @@ func (us *UserService) GetAvailableStagesByEpisodeId(episodeId int32, userId uui
 	us.rdb.Set(key, stages)
 	return stages, nil
 }
+
+func (us *UserService) GiveDigimonToUser(userId uuid.UUID, digimonId int32, isStarter, isLocked bool) error {
+	cacheKey := cache.GetUserDigimonByFlagStarterKey(userId.String())
+	if cachedStarter, err := us.rdb.Get(cacheKey); err == nil {
+		var starter models.UserDigimon
+		if err := json.Unmarshal([]byte(cachedStarter), &starter); err != nil {
+			return fmt.Errorf("[User Service] failed to unmarshal user digimon: %w", err)
+		}
+		return fmt.Errorf("[User Service] user already has a starter digimon")
+	}
+
+	if doesUserHaveStarter, _ := us.db.GetUserDigimonByStarterFlag(us.ctx, pgtype.UUID{Bytes: userId, Valid: true}); doesUserHaveStarter.ID != uuid.Nil && isStarter {
+		us.rdb.Set(cacheKey, doesUserHaveStarter)
+		return fmt.Errorf("[User Service] user already has a starter digimon")
+	}
+
+	_, err := us.db.CreateUserDigimon(us.ctx, models.CreateUserDigimonParams{
+		UserID:    pgtype.UUID{Bytes: userId, Valid: true},
+		BaseID:    pgtype.Int4{Int32: digimonId, Valid: true},
+		IsStarter: pgtype.Bool{Bool: isStarter, Valid: true},
+		IsLocked:  pgtype.Bool{Bool: isLocked, Valid: true},
+	})
+
+	if err != nil {
+		return fmt.Errorf("[User Service] create user digimon error: %w", err)
+	}
+
+	return nil
+}

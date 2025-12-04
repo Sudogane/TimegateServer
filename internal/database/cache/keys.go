@@ -9,6 +9,9 @@ const (
 	UserUnlockedChapters             = "user:unlocked-chapters:%s"
 	UserAvailableEpisodesByChapterId = "user:available-episodes:chapter:%d:%s"
 	UserAvailableStagesByEpisodeId   = "user:available-stages:episode:%d:%s"
+	UserDigimonByFlagStarter         = "user:digimon:flag-starter:%s"
+
+	DigimonById = "digimon:id:%s"
 )
 
 func GetUserByIdKey(id string) string {
@@ -33,4 +36,12 @@ func GetUserAvailableEpisodesByChapterIdKey(userId string, chapterId int32) stri
 
 func GetUserAvailableStagesByEpisodeIdKey(userId string, episodeId int32) string {
 	return fmt.Sprintf(UserAvailableStagesByEpisodeId, episodeId, userId)
+}
+
+func GetUserDigimonByFlagStarterKey(userId string) string {
+	return fmt.Sprintf(UserDigimonByFlagStarter, userId)
+}
+
+func GetDigimonByIdKey(id string) string {
+	return fmt.Sprintf(DigimonById, id)
 }

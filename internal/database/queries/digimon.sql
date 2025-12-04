@@ -15,3 +15,6 @@ SELECT * FROM user_digimon WHERE id = $1 AND user_id = $2;
 
 -- name: GetAllUserDigimon :many
 SELECT * FROM user_digimon WHERE id = $1;
+
+-- name: GetUserDigimonByStarterFlag :one
+SELECT * FROM user_digimon WHERE user_id = $1 AND is_starter = true LIMIT 1;

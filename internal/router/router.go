@@ -6,6 +6,7 @@ import (
 
 	"github.com/sudogane/project_timegate/internal/router/handler"
 	"github.com/sudogane/project_timegate/internal/server"
+	"github.com/sudogane/project_timegate/internal/services"
 	"github.com/sudogane/project_timegate/pkg/packets"
 )
 
@@ -13,12 +14,15 @@ type Router struct {
 	handlers map[packets.PacketType]handler.Handler
 	mutex    sync.RWMutex
 	server   server.GameServerInterface
+
+	userService *services.UserService
 }
 
 func NewRouter(server server.GameServerInterface) *Router {
 	router := &Router{
-		handlers: make(map[packets.PacketType]handler.Handler),
-		server:   server,
+		handlers:    make(map[packets.PacketType]handler.Handler),
+		server:      server,
+		userService: services.NewUserService(server),
 	}
 
 	router.RegisterRoutes()
@@ -49,10 +53,15 @@ func (r *Router) Route(session *server.PlayerSession, msg *packets.FromClientToS
 }
 
 func (r *Router) RegisterRoutes() {
+	// --> Authentication ::
 	r.RegisterRouter(packets.PacketType_AUTHENTICATION_REQUEST, handler.NewAuthenticationHandler(r.server))
 
 	// --> Stages ::
 	stagesHandler := handler.NewStagesHandler(r.server)
 	r.RegisterRouter(packets.PacketType_CHAPTER_DATA_REQUEST, stagesHandler)
 	r.RegisterRouter(packets.PacketType_EPISODES_BY_CHAPTER_REQUEST, stagesHandler)
+
+	// --> Development ::
+	developmentHandler := handler.NewDevelopmentHandle(r.userService)
+	r.RegisterRouter(packets.PacketType_DEVELOPMENT, developmentHandler)
 }
