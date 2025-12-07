@@ -75,6 +75,7 @@ const (
 	// User
 	PacketType_CHAPTER_DATA_REQUEST        PacketType = 2
 	PacketType_EPISODES_BY_CHAPTER_REQUEST PacketType = 3
+	PacketType_DIGIMON_SELECTED            PacketType = 4
 	PacketType_DEVELOPMENT                 PacketType = 999
 )
 
@@ -85,6 +86,7 @@ var (
 		1:   "AUTHENTICATION_REQUEST",
 		2:   "CHAPTER_DATA_REQUEST",
 		3:   "EPISODES_BY_CHAPTER_REQUEST",
+		4:   "DIGIMON_SELECTED",
 		999: "DEVELOPMENT",
 	}
 	PacketType_value = map[string]int32{
@@ -92,6 +94,7 @@ var (
 		"AUTHENTICATION_REQUEST":      1,
 		"CHAPTER_DATA_REQUEST":        2,
 		"EPISODES_BY_CHAPTER_REQUEST": 3,
+		"DIGIMON_SELECTED":            4,
 		"DEVELOPMENT":                 999,
 	}
 )
@@ -187,6 +190,7 @@ type FromClientToServer struct {
 	//
 	//	*FromClientToServer_AuthenticationRequest
 	//	*FromClientToServer_EpisodesByChapterRequest
+	//	*FromClientToServer_DigimonSelected
 	//	*FromClientToServer_Dev
 	Payload       isFromClientToServer_Payload `protobuf_oneof:"payload"`
 	unknownFields protoimpl.UnknownFields
@@ -262,6 +266,15 @@ func (x *FromClientToServer) GetEpisodesByChapterRequest() *EpisodesByChapterReq
 	return nil
 }
 
+func (x *FromClientToServer) GetDigimonSelected() *DigimonSelected {
+	if x != nil {
+		if x, ok := x.Payload.(*FromClientToServer_DigimonSelected); ok {
+			return x.DigimonSelected
+		}
+	}
+	return nil
+}
+
 func (x *FromClientToServer) GetDev() *DevelopmentPacket {
 	if x != nil {
 		if x, ok := x.Payload.(*FromClientToServer_Dev); ok {
@@ -283,6 +296,10 @@ type FromClientToServer_EpisodesByChapterRequest struct {
 	EpisodesByChapterRequest *EpisodesByChapterRequest `protobuf:"bytes,11,opt,name=episodes_by_chapter_request,json=episodesByChapterRequest,proto3,oneof"`
 }
 
+type FromClientToServer_DigimonSelected struct {
+	DigimonSelected *DigimonSelected `protobuf:"bytes,12,opt,name=digimon_selected,json=digimonSelected,proto3,oneof"`
+}
+
 type FromClientToServer_Dev struct {
 	Dev *DevelopmentPacket `protobuf:"bytes,9999,opt,name=dev,proto3,oneof"`
 }
@@ -290,6 +307,8 @@ type FromClientToServer_Dev struct {
 func (*FromClientToServer_AuthenticationRequest) isFromClientToServer_Payload() {}
 
 func (*FromClientToServer_EpisodesByChapterRequest) isFromClientToServer_Payload() {}
+
+func (*FromClientToServer_DigimonSelected) isFromClientToServer_Payload() {}
 
 func (*FromClientToServer_Dev) isFromClientToServer_Payload() {}
 
@@ -994,17 +1013,63 @@ func (x *EpisodeData) GetEpisodeName() string {
 	return ""
 }
 
+// DEVELOPMENT
+type DigimonSelected struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	DigimonSpecies string                 `protobuf:"bytes,1,opt,name=digimon_species,json=digimonSpecies,proto3" json:"digimon_species,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *DigimonSelected) Reset() {
+	*x = DigimonSelected{}
+	mi := &file_packets_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DigimonSelected) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DigimonSelected) ProtoMessage() {}
+
+func (x *DigimonSelected) ProtoReflect() protoreflect.Message {
+	mi := &file_packets_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DigimonSelected.ProtoReflect.Descriptor instead.
+func (*DigimonSelected) Descriptor() ([]byte, []int) {
+	return file_packets_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *DigimonSelected) GetDigimonSpecies() string {
+	if x != nil {
+		return x.DigimonSpecies
+	}
+	return ""
+}
+
 type DevelopmentPacket struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
 	ADD_DIGIMON_TO_TEAM bool                   `protobuf:"varint,1,opt,name=ADD_DIGIMON_TO_TEAM,json=ADDDIGIMONTOTEAM,proto3" json:"ADD_DIGIMON_TO_TEAM,omitempty"`
 	RESET_ACCOUNT       bool                   `protobuf:"varint,2,opt,name=RESET_ACCOUNT,json=RESETACCOUNT,proto3" json:"RESET_ACCOUNT,omitempty"`
+	STARTER_SPECIES     string                 `protobuf:"bytes,3,opt,name=STARTER_SPECIES,json=STARTERSPECIES,proto3" json:"STARTER_SPECIES,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
 
 func (x *DevelopmentPacket) Reset() {
 	*x = DevelopmentPacket{}
-	mi := &file_packets_proto_msgTypes[12]
+	mi := &file_packets_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1016,7 +1081,7 @@ func (x *DevelopmentPacket) String() string {
 func (*DevelopmentPacket) ProtoMessage() {}
 
 func (x *DevelopmentPacket) ProtoReflect() protoreflect.Message {
-	mi := &file_packets_proto_msgTypes[12]
+	mi := &file_packets_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1029,7 +1094,7 @@ func (x *DevelopmentPacket) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DevelopmentPacket.ProtoReflect.Descriptor instead.
 func (*DevelopmentPacket) Descriptor() ([]byte, []int) {
-	return file_packets_proto_rawDescGZIP(), []int{12}
+	return file_packets_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *DevelopmentPacket) GetADD_DIGIMON_TO_TEAM() bool {
@@ -1046,18 +1111,26 @@ func (x *DevelopmentPacket) GetRESET_ACCOUNT() bool {
 	return false
 }
 
+func (x *DevelopmentPacket) GetSTARTER_SPECIES() string {
+	if x != nil {
+		return x.STARTER_SPECIES
+	}
+	return ""
+}
+
 var File_packets_proto protoreflect.FileDescriptor
 
 const file_packets_proto_rawDesc = "" +
 	"\n" +
-	"\rpackets.proto\x12\apackets\"\xdc\x02\n" +
+	"\rpackets.proto\x12\apackets\"\xa3\x03\n" +
 	"\x12FromClientToServer\x124\n" +
 	"\vpacket_type\x18\x01 \x01(\x0e2\x13.packets.PacketTypeR\n" +
 	"packetType\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\x12W\n" +
 	"\x16authentication_request\x18\n" +
 	" \x01(\v2\x1e.packets.AuthenticationRequestH\x00R\x15authenticationRequest\x12b\n" +
-	"\x1bepisodes_by_chapter_request\x18\v \x01(\v2!.packets.EpisodesByChapterRequestH\x00R\x18episodesByChapterRequest\x12/\n" +
+	"\x1bepisodes_by_chapter_request\x18\v \x01(\v2!.packets.EpisodesByChapterRequestH\x00R\x18episodesByChapterRequest\x12E\n" +
+	"\x10digimon_selected\x18\f \x01(\v2\x18.packets.DigimonSelectedH\x00R\x0fdigimonSelected\x12/\n" +
 	"\x03dev\x18\x8fN \x01(\v2\x1a.packets.DevelopmentPacketH\x00R\x03devB\t\n" +
 	"\apayload\"\xb4\x03\n" +
 	"\x12FromServerToClient\x12A\n" +
@@ -1107,20 +1180,24 @@ const file_packets_proto_rawDesc = "" +
 	"\n" +
 	"episode_id\x18\x01 \x01(\x05R\tepisodeId\x12%\n" +
 	"\x0eepisode_number\x18\x02 \x01(\x05R\repisodeNumber\x12!\n" +
-	"\fepisode_name\x18\x03 \x01(\tR\vepisodeName\"g\n" +
+	"\fepisode_name\x18\x03 \x01(\tR\vepisodeName\":\n" +
+	"\x0fDigimonSelected\x12'\n" +
+	"\x0fdigimon_species\x18\x01 \x01(\tR\x0edigimonSpecies\"\x90\x01\n" +
 	"\x11DevelopmentPacket\x12-\n" +
 	"\x13ADD_DIGIMON_TO_TEAM\x18\x01 \x01(\bR\x10ADDDIGIMONTOTEAM\x12#\n" +
-	"\rRESET_ACCOUNT\x18\x02 \x01(\bR\fRESETACCOUNT*-\n" +
+	"\rRESET_ACCOUNT\x18\x02 \x01(\bR\fRESETACCOUNT\x12'\n" +
+	"\x0fSTARTER_SPECIES\x18\x03 \x01(\tR\x0eSTARTERSPECIES*-\n" +
 	"\x12AuthenticationType\x12\t\n" +
 	"\x05LOGIN\x10\x00\x12\f\n" +
-	"\bREGISTER\x10\x01*\x81\x01\n" +
+	"\bREGISTER\x10\x01*\x97\x01\n" +
 	"\n" +
 	"PacketType\x12\n" +
 	"\n" +
 	"\x06UNKOWN\x10\x00\x12\x1a\n" +
 	"\x16AUTHENTICATION_REQUEST\x10\x01\x12\x18\n" +
 	"\x14CHAPTER_DATA_REQUEST\x10\x02\x12\x1f\n" +
-	"\x1bEPISODES_BY_CHAPTER_REQUEST\x10\x03\x12\x10\n" +
+	"\x1bEPISODES_BY_CHAPTER_REQUEST\x10\x03\x12\x14\n" +
+	"\x10DIGIMON_SELECTED\x10\x04\x12\x10\n" +
 	"\vDEVELOPMENT\x10\xe7\a*\x82\x01\n" +
 	"\tErrorCode\x12\x10\n" +
 	"\fUNKOWN_ERROR\x10\x00\x12\x17\n" +
@@ -1142,7 +1219,7 @@ func file_packets_proto_rawDescGZIP() []byte {
 }
 
 var file_packets_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_packets_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_packets_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_packets_proto_goTypes = []any{
 	(AuthenticationType)(0),            // 0: packets.AuthenticationType
 	(PacketType)(0),                    // 1: packets.PacketType
@@ -1159,28 +1236,30 @@ var file_packets_proto_goTypes = []any{
 	(*EpisodesByChapterRequest)(nil),   // 12: packets.EpisodesByChapterRequest
 	(*AccessibleEpisodesResponse)(nil), // 13: packets.AccessibleEpisodesResponse
 	(*EpisodeData)(nil),                // 14: packets.EpisodeData
-	(*DevelopmentPacket)(nil),          // 15: packets.DevelopmentPacket
+	(*DigimonSelected)(nil),            // 15: packets.DigimonSelected
+	(*DevelopmentPacket)(nil),          // 16: packets.DevelopmentPacket
 }
 var file_packets_proto_depIdxs = []int32{
 	1,  // 0: packets.FromClientToServer.packet_type:type_name -> packets.PacketType
 	7,  // 1: packets.FromClientToServer.authentication_request:type_name -> packets.AuthenticationRequest
 	12, // 2: packets.FromClientToServer.episodes_by_chapter_request:type_name -> packets.EpisodesByChapterRequest
-	15, // 3: packets.FromClientToServer.dev:type_name -> packets.DevelopmentPacket
-	6,  // 4: packets.FromServerToClient.websocket_id:type_name -> packets.WebsocketIDResponse
-	5,  // 5: packets.FromServerToClient.error_response:type_name -> packets.ErrorResponse
-	8,  // 6: packets.FromServerToClient.authentication_response:type_name -> packets.AuthenticationResponse
-	10, // 7: packets.FromServerToClient.chapter_data_response:type_name -> packets.AccessibleChapterResponse
-	13, // 8: packets.FromServerToClient.episode_data_response:type_name -> packets.AccessibleEpisodesResponse
-	2,  // 9: packets.ErrorResponse.code:type_name -> packets.ErrorCode
-	0,  // 10: packets.AuthenticationRequest.type:type_name -> packets.AuthenticationType
-	9,  // 11: packets.AuthenticationResponse.user_data:type_name -> packets.UserData
-	11, // 12: packets.AccessibleChapterResponse.chapters:type_name -> packets.ChapterData
-	14, // 13: packets.AccessibleEpisodesResponse.episodes:type_name -> packets.EpisodeData
-	14, // [14:14] is the sub-list for method output_type
-	14, // [14:14] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	15, // 3: packets.FromClientToServer.digimon_selected:type_name -> packets.DigimonSelected
+	16, // 4: packets.FromClientToServer.dev:type_name -> packets.DevelopmentPacket
+	6,  // 5: packets.FromServerToClient.websocket_id:type_name -> packets.WebsocketIDResponse
+	5,  // 6: packets.FromServerToClient.error_response:type_name -> packets.ErrorResponse
+	8,  // 7: packets.FromServerToClient.authentication_response:type_name -> packets.AuthenticationResponse
+	10, // 8: packets.FromServerToClient.chapter_data_response:type_name -> packets.AccessibleChapterResponse
+	13, // 9: packets.FromServerToClient.episode_data_response:type_name -> packets.AccessibleEpisodesResponse
+	2,  // 10: packets.ErrorResponse.code:type_name -> packets.ErrorCode
+	0,  // 11: packets.AuthenticationRequest.type:type_name -> packets.AuthenticationType
+	9,  // 12: packets.AuthenticationResponse.user_data:type_name -> packets.UserData
+	11, // 13: packets.AccessibleChapterResponse.chapters:type_name -> packets.ChapterData
+	14, // 14: packets.AccessibleEpisodesResponse.episodes:type_name -> packets.EpisodeData
+	15, // [15:15] is the sub-list for method output_type
+	15, // [15:15] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_packets_proto_init() }
@@ -1191,6 +1270,7 @@ func file_packets_proto_init() {
 	file_packets_proto_msgTypes[0].OneofWrappers = []any{
 		(*FromClientToServer_AuthenticationRequest)(nil),
 		(*FromClientToServer_EpisodesByChapterRequest)(nil),
+		(*FromClientToServer_DigimonSelected)(nil),
 		(*FromClientToServer_Dev)(nil),
 	}
 	file_packets_proto_msgTypes[1].OneofWrappers = []any{
@@ -1206,7 +1286,7 @@ func file_packets_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_packets_proto_rawDesc), len(file_packets_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   13,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
