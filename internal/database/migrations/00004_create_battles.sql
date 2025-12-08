@@ -50,6 +50,9 @@ CREATE TABLE IF NOT EXISTS stages (
     max_waves INTEGER DEFAULT 1 check (max_waves BETWEEN 1 AND 3),
     stage_type TEXT DEFAULT 'battle'
         CHECK (stage_type IN ('battle', 'boss_battle', 'dialogue', 'cutscene')),
+    
+    -- Flags System
+    trigger_flag_on_dialogue_end TEXT DEFAULT NULL,
 
     UNIQUE(episode_id, stage_number)
 );
@@ -62,6 +65,7 @@ INSERT INTO stages (episode_id, chapter_id, stage_number, stage_name, descriptio
 VALUES (1, 1, 3, 'funcionou?', 'Teste', 2);
 
 
+-- Rewrite later
 CREATE TABLE IF NOT EXISTS stage_waves (
     id SERIAL PRIMARY KEY,
     stage_id INTEGER REFERENCES stages(id),

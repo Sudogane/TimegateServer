@@ -15,14 +15,17 @@ type Router struct {
 	mutex    sync.RWMutex
 	server   server.GameServerInterface
 
-	userService *services.UserService
+	userService     *services.UserService
+	userFlagService *services.UserFlagsService // <- Try to implement it INSIDE user service later.
 }
 
 func NewRouter(server server.GameServerInterface) *Router {
 	router := &Router{
-		handlers:    make(map[packets.PacketType]handler.Handler),
-		server:      server,
-		userService: services.NewUserService(server),
+		handlers: make(map[packets.PacketType]handler.Handler),
+		server:   server,
+
+		userService:     services.NewUserService(server),
+		userFlagService: services.NewUserFlagsService(server),
 	}
 
 	router.RegisterRoutes()
@@ -62,6 +65,6 @@ func (r *Router) RegisterRoutes() {
 	r.RegisterRouter(packets.PacketType_EPISODES_BY_CHAPTER_REQUEST, stagesHandler)
 
 	// --> Development ::
-	developmentHandler := handler.NewDevelopmentHandle(r.userService)
+	developmentHandler := handler.NewDevelopmentHandle(r.userService, r.userFlagService)
 	r.RegisterRouter(packets.PacketType_DEVELOPMENT, developmentHandler)
 }

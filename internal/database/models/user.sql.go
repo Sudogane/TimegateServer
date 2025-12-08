@@ -155,6 +155,59 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
+const createUserFlag = `-- name: CreateUserFlag :one
+INSERT INTO user_flags (user_id, flag_key, flag_value) VALUES ($1, $2, $3) RETURNING user_id, flag_key, flag_value, created_at, updated_at
+`
+
+type CreateUserFlagParams struct {
+	UserID    uuid.UUID `json:"user_id"`
+	FlagKey   string    `json:"flag_key"`
+	FlagValue []byte    `json:"flag_value"`
+}
+
+func (q *Queries) CreateUserFlag(ctx context.Context, arg CreateUserFlagParams) (UserFlag, error) {
+	row := q.db.QueryRow(ctx, createUserFlag, arg.UserID, arg.FlagKey, arg.FlagValue)
+	var i UserFlag
+	err := row.Scan(
+		&i.UserID,
+		&i.FlagKey,
+		&i.FlagValue,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getAllUserFlags = `-- name: GetAllUserFlags :many
+SELECT user_id, flag_key, flag_value, created_at, updated_at FROM user_flags WHERE user_id = $1
+`
+
+func (q *Queries) GetAllUserFlags(ctx context.Context, userID uuid.UUID) ([]UserFlag, error) {
+	rows, err := q.db.Query(ctx, getAllUserFlags, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []UserFlag
+	for rows.Next() {
+		var i UserFlag
+		if err := rows.Scan(
+			&i.UserID,
+			&i.FlagKey,
+			&i.FlagValue,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getCompletedStages = `-- name: GetCompletedStages :many
 SELECT user_id, stage_id, completed_at FROM user_completed_stages WHERE user_id = $1
 `
@@ -302,6 +355,28 @@ func (q *Queries) GetUserDigibank(ctx context.Context, userID uuid.UUID) ([]GetU
 		return nil, err
 	}
 	return items, nil
+}
+
+const getUserFlagByKey = `-- name: GetUserFlagByKey :one
+SELECT user_id, flag_key, flag_value, created_at, updated_at FROM user_flags WHERE user_id = $1 AND flag_key = $2
+`
+
+type GetUserFlagByKeyParams struct {
+	UserID  uuid.UUID `json:"user_id"`
+	FlagKey string    `json:"flag_key"`
+}
+
+func (q *Queries) GetUserFlagByKey(ctx context.Context, arg GetUserFlagByKeyParams) (UserFlag, error) {
+	row := q.db.QueryRow(ctx, getUserFlagByKey, arg.UserID, arg.FlagKey)
+	var i UserFlag
+	err := row.Scan(
+		&i.UserID,
+		&i.FlagKey,
+		&i.FlagValue,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const getUserTeam = `-- name: GetUserTeam :many
@@ -517,4 +592,27 @@ type UnlockUserChapterParams struct {
 func (q *Queries) UnlockUserChapter(ctx context.Context, arg UnlockUserChapterParams) error {
 	_, err := q.db.Exec(ctx, unlockUserChapter, arg.UserID, arg.ChapterID, arg.IsUnlocked)
 	return err
+}
+
+const updateUserFlag = `-- name: UpdateUserFlag :one
+UPDATE user_flags SET flag_value = $3 WHERE user_id = $1 AND flag_key = $2 RETURNING user_id, flag_key, flag_value, created_at, updated_at
+`
+
+type UpdateUserFlagParams struct {
+	UserID    uuid.UUID `json:"user_id"`
+	FlagKey   string    `json:"flag_key"`
+	FlagValue []byte    `json:"flag_value"`
+}
+
+func (q *Queries) UpdateUserFlag(ctx context.Context, arg UpdateUserFlagParams) (UserFlag, error) {
+	row := q.db.QueryRow(ctx, updateUserFlag, arg.UserID, arg.FlagKey, arg.FlagValue)
+	var i UserFlag
+	err := row.Scan(
+		&i.UserID,
+		&i.FlagKey,
+		&i.FlagValue,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }

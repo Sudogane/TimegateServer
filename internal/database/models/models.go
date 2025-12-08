@@ -39,19 +39,20 @@ type Episode struct {
 }
 
 type Stage struct {
-	ID            int32       `json:"id"`
-	ChapterID     pgtype.Int4 `json:"chapter_id"`
-	EpisodeID     pgtype.Int4 `json:"episode_id"`
-	StageNumber   int32       `json:"stage_number"`
-	StageName     string      `json:"stage_name"`
-	Description   pgtype.Text `json:"description"`
-	DefeatStageID pgtype.Int4 `json:"defeat_stage_id"`
-	TamerLevel    pgtype.Int4 `json:"tamer_level"`
-	DropBits      pgtype.Int4 `json:"drop_bits"`
-	DropExp       pgtype.Int4 `json:"drop_exp"`
-	DropSexp      pgtype.Int4 `json:"drop_sexp"`
-	MaxWaves      pgtype.Int4 `json:"max_waves"`
-	StageType     pgtype.Text `json:"stage_type"`
+	ID                       int32       `json:"id"`
+	ChapterID                pgtype.Int4 `json:"chapter_id"`
+	EpisodeID                pgtype.Int4 `json:"episode_id"`
+	StageNumber              int32       `json:"stage_number"`
+	StageName                string      `json:"stage_name"`
+	Description              pgtype.Text `json:"description"`
+	DefeatStageID            pgtype.Int4 `json:"defeat_stage_id"`
+	TamerLevel               pgtype.Int4 `json:"tamer_level"`
+	DropBits                 pgtype.Int4 `json:"drop_bits"`
+	DropExp                  pgtype.Int4 `json:"drop_exp"`
+	DropSexp                 pgtype.Int4 `json:"drop_sexp"`
+	MaxWaves                 pgtype.Int4 `json:"max_waves"`
+	StageType                pgtype.Text `json:"stage_type"`
+	TriggerFlagOnDialogueEnd pgtype.Text `json:"trigger_flag_on_dialogue_end"`
 }
 
 type StageWafe struct {
@@ -115,6 +116,14 @@ type UserEpisodeProgress struct {
 	IsUnlocked  pgtype.Bool      `json:"is_unlocked"`
 	IsBeaten    pgtype.Bool      `json:"is_beaten"`
 	CompletedAt pgtype.Timestamp `json:"completed_at"`
+}
+
+type UserFlag struct {
+	UserID    uuid.UUID        `json:"user_id"`
+	FlagKey   string           `json:"flag_key"`
+	FlagValue []byte           `json:"flag_value"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
 type UserInventory struct {

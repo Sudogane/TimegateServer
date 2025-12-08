@@ -91,3 +91,12 @@ JOIN episodes e ON s.episode_id = e.id
 LEFT JOIN user_completed_stages ucs ON s.id = ucs.stage_id AND ucs.user_id = $1
 WHERE e.chapter_id = $2
 ORDER BY e.chapter_id;
+
+-- name: GetAllUserFlags :many
+SELECT * FROM user_flags WHERE user_id = $1;
+-- name: GetUserFlagByKey :one
+SELECT * FROM user_flags WHERE user_id = $1 AND flag_key = $2;
+-- name: CreateUserFlag :one
+INSERT INTO user_flags (user_id, flag_key, flag_value) VALUES ($1, $2, $3) RETURNING *;
+-- name: UpdateUserFlag :one
+UPDATE user_flags SET flag_value = $3 WHERE user_id = $1 AND flag_key = $2 RETURNING *;

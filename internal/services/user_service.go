@@ -1,7 +1,6 @@
 package services
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 
@@ -13,16 +12,12 @@ import (
 )
 
 type UserService struct {
-	db  *models.Queries
-	rdb *cache.RedisClient
-	ctx context.Context
+	BaseService
 }
 
 func NewUserService(gs server.GameServerInterface) *UserService {
 	return &UserService{
-		db:  gs.GetDB(),
-		rdb: gs.GetRDB(),
-		ctx: context.Background(),
+		BaseService: *NewBaseService(gs),
 	}
 }
 
