@@ -53,7 +53,7 @@ func (h *AuthenticationHandler) handleUserLogin(session *server.PlayerSession, l
 		StaminaCurrent: resources.StaminaCurrent.Int32,
 		StaminaMax:     resources.StaminaMax.Int32,
 	}
-	responsePacket := packets.NewAuthenticationResponse("user access token", userDataPacket)
+	responsePacket := packets.NewAuthenticationResponse("user access token", userDataPacket, "")
 	h.Send(session, responsePacket)
 }
 
@@ -110,7 +110,7 @@ func (h *AuthenticationHandler) handleUserRegister(session *server.PlayerSession
 	}
 	session.PlayerId = user.ID
 
-	responsePacket := packets.NewAuthenticationResponse("user access token", userData)
+	responsePacket := packets.NewAuthenticationResponse("user access token", userData, "DEVELOPMENT")
 	h.Send(session, responsePacket)
 }
 

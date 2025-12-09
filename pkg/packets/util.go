@@ -11,11 +11,14 @@ func NewErrorMessage(code ErrorCode) ServerPayload {
 	}
 }
 
-func NewAuthenticationResponse(token string, userData *UserData) ServerPayload {
+func NewAuthenticationResponse(token string, userData *UserData, dialogueId string) ServerPayload {
 	return &FromServerToClient_AuthenticationResponse{
 		AuthenticationResponse: &AuthenticationResponse{
 			AccessToken: token,
 			UserData:    userData,
+			DialogueTrigger: &DialogueTrigger{
+				DialogueId: dialogueId,
+			},
 		},
 	}
 }
