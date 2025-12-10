@@ -1167,8 +1167,7 @@ func (x *DialogueFinished) GetDialogueId() string {
 type DialogueChoiceSelected struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	DialogueId       string                 `protobuf:"bytes,1,opt,name=dialogue_id,json=dialogueId,proto3" json:"dialogue_id,omitempty"`
-	DialogueChoiceId string                 `protobuf:"bytes,2,opt,name=dialogue_choice_id,json=dialogueChoiceId,proto3" json:"dialogue_choice_id,omitempty"`
-	DialogueMessage  string                 `protobuf:"bytes,3,opt,name=dialogue_message,json=dialogueMessage,proto3" json:"dialogue_message,omitempty"`
+	DialogueChoiceId int32                  `protobuf:"varint,2,opt,name=dialogue_choice_id,json=dialogueChoiceId,proto3" json:"dialogue_choice_id,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -1210,18 +1209,11 @@ func (x *DialogueChoiceSelected) GetDialogueId() string {
 	return ""
 }
 
-func (x *DialogueChoiceSelected) GetDialogueChoiceId() string {
+func (x *DialogueChoiceSelected) GetDialogueChoiceId() int32 {
 	if x != nil {
 		return x.DialogueChoiceId
 	}
-	return ""
-}
-
-func (x *DialogueChoiceSelected) GetDialogueMessage() string {
-	if x != nil {
-		return x.DialogueMessage
-	}
-	return ""
+	return 0
 }
 
 // DEVELOPMENT
@@ -1401,12 +1393,11 @@ const file_packets_proto_rawDesc = "" +
 	"dialogueId\"3\n" +
 	"\x10DialogueFinished\x12\x1f\n" +
 	"\vdialogue_id\x18\x01 \x01(\tR\n" +
-	"dialogueId\"\x92\x01\n" +
+	"dialogueId\"g\n" +
 	"\x16DialogueChoiceSelected\x12\x1f\n" +
 	"\vdialogue_id\x18\x01 \x01(\tR\n" +
 	"dialogueId\x12,\n" +
-	"\x12dialogue_choice_id\x18\x02 \x01(\tR\x10dialogueChoiceId\x12)\n" +
-	"\x10dialogue_message\x18\x03 \x01(\tR\x0fdialogueMessage\":\n" +
+	"\x12dialogue_choice_id\x18\x02 \x01(\x05R\x10dialogueChoiceId\":\n" +
 	"\x0fDigimonSelected\x12'\n" +
 	"\x0fdigimon_species\x18\x01 \x01(\tR\x0edigimonSpecies\"\x90\x01\n" +
 	"\x11DevelopmentPacket\x12-\n" +

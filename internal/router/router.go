@@ -59,6 +59,10 @@ func (r *Router) RegisterRoutes() {
 	// --> Authentication ::
 	r.RegisterRouter(packets.PacketType_AUTHENTICATION_REQUEST, handler.NewAuthenticationHandler(r.server))
 
+	// --> Dialogue ::
+	dialogueHandler := handler.NewDialogueHandler(r.userService, r.userFlagService)
+	r.RegisterRouter(packets.PacketType_DIALOGUE_CHOICE_SELECTED, dialogueHandler)
+
 	// --> Stages ::
 	stagesHandler := handler.NewStagesHandler(r.server)
 	r.RegisterRouter(packets.PacketType_CHAPTER_DATA_REQUEST, stagesHandler)
