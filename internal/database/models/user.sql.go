@@ -46,6 +46,17 @@ func (q *Queries) AddUserBits(ctx context.Context, arg AddUserBitsParams) error 
 	return err
 }
 
+const checkIfUsernameIsTaken = `-- name: CheckIfUsernameIsTaken :one
+SELECT EXISTS (SELECT 1 FROM users WHERE username ILIKE $1) as exists
+`
+
+func (q *Queries) CheckIfUsernameIsTaken(ctx context.Context, username string) (bool, error) {
+	row := q.db.QueryRow(ctx, checkIfUsernameIsTaken, username)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
 const checkUserChapterCompletion = `-- name: CheckUserChapterCompletion :one
 SELECT COUNT(*) as total_stages,
     COUNT(ucs.stage_id) as completed_stages

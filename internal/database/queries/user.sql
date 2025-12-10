@@ -6,6 +6,9 @@ INSERT INTO users (
 -- name: GetUserByUsername :one
 SELECT * FROM users WHERE username = $1 LIMIT 1;
 
+-- name: CheckIfUsernameIsTaken :one
+SELECT EXISTS (SELECT 1 FROM users WHERE username ILIKE $1) as exists;
+
 -- name: GetUserById :one
 SELECT * FROM users WHERE id = $1 LIMIT 1;
 

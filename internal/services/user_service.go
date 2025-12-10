@@ -21,6 +21,10 @@ func NewUserService(gs server.GameServerInterface) *UserService {
 	}
 }
 
+func (us *UserService) CheckIfUsernameIsTaken(username string) (bool, error) {
+	return us.db.CheckIfUsernameIsTaken(us.ctx, username)
+}
+
 func (us *UserService) GetById(id uuid.UUID) (*models.User, error) {
 	key := cache.GetUserByIdKey(id.String())
 

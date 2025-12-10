@@ -126,10 +126,10 @@ func (h *AuthenticationHandler) validateRegisterData(registerData *packets.Authe
 		return packets.ErrorCode_PASSWORD_TOO_SHORT, errors.New("username too long or too short")
 	}
 
-	_, usernameWasTaken := userService.GetByUsername(username)
+	isTaken, err := userService.CheckIfUsernameIsTaken(username)
 
-	if usernameWasTaken == nil {
-		return packets.ErrorCode_USERNAME_TAKEN, errors.New("username too long or too short")
+	if err != nil || isTaken {
+		return packets.ErrorCode_USERNAME_TAKEN, errors.New("username was taken")
 	}
 
 	return packets.ErrorCode_UNKOWN_ERROR, nil
