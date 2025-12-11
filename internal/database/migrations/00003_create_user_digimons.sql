@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS user_digimon (
     base_id INTEGER REFERENCES base_digimon(id),
 
     -- General Info
+    species TEXT,
     nickname TEXT,
     level INTEGER DEFAULT 1,
     exp INTEGER DEFAULT 0,
@@ -31,9 +32,9 @@ CREATE OR REPLACE FUNCTION set_initial_digimon_stats()
 RETURNS TRIGGER AS $$
 BEGIN
     SELECT 
-        base_health, base_mana, base_attack, base_defense, base_speed
+        species, base_health, base_mana, base_attack, base_defense, base_speed
     INTO
-        NEW.health, NEW.mana, NEW.attack, NEW.defense, NEW.speed
+        NEW.species, NEW.health, NEW.mana, NEW.attack, NEW.defense, NEW.speed
     FROM base_digimon
     WHERE id = NEW.base_id;
 
