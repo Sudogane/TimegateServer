@@ -120,8 +120,8 @@ type UserEpisodeProgress struct {
 
 type UserFlag struct {
 	UserID    uuid.UUID        `json:"user_id"`
-	FlagKey   string           `json:"flag_key"`
-	FlagValue []byte           `json:"flag_value"`
+	FlagName  string           `json:"flag_name"`
+	IsActive  pgtype.Bool      `json:"is_active"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }

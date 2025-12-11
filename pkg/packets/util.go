@@ -30,3 +30,11 @@ func NewWebsocketIdResponse(id string) ServerPayload {
 		},
 	}
 }
+
+func NewDialogueTrigger(dialogueId string) ServerPayload {
+	return &FromServerToClient_DialogueTrigger{
+		DialogueTrigger: &DialogueTrigger{
+			DialogueId: dialogueId,
+		},
+	}
+}

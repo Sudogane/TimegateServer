@@ -54,7 +54,7 @@ func (h *DialogueHandler) onDialogueChoiceSelected(session *server.PlayerSession
 			return
 		}
 
-		err = h.flagsService.SetUserFlag(session.PlayerId, "has_selected_starter", "{\"active\": true}")
+		err = h.flagsService.UpdateUserFlag(session.PlayerId, "has_selected_starter", true)
 		if err != nil {
 			session.Log("ERROR", err.Error())
 			h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)

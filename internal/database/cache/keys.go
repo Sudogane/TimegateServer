@@ -11,6 +11,9 @@ const (
 	UserAvailableStagesByEpisodeId   = "user:available-stages:episode:%d:%s"
 	UserDigimonByFlagStarter         = "user:digimon:flag-starter:%s"
 
+	UserGetAllFlags   = "user:get-all-flags:%s"
+	UserGetFlagByName = "user:get-flag-by-name:%s:%s"
+
 	DigimonById = "digimon:id:%s"
 )
 
@@ -44,4 +47,12 @@ func GetUserDigimonByFlagStarterKey(userId string) string {
 
 func GetDigimonByIdKey(id string) string {
 	return fmt.Sprintf(DigimonById, id)
+}
+
+func GetUserGetAllFlagsKey(userId string) string {
+	return fmt.Sprintf(UserGetAllFlags, userId)
+}
+
+func GetUserGetFlagByNameKey(userId string, name string) string {
+	return fmt.Sprintf(UserGetFlagByName, userId, name)
 }

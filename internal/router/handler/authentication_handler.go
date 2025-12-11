@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/sudogane/project_timegate/internal/crypt"
 	"github.com/sudogane/project_timegate/internal/server"
 	"github.com/sudogane/project_timegate/internal/services"
@@ -11,13 +12,15 @@ import (
 
 type AuthenticationHandler struct {
 	BaseHandler
-	userService *services.UserService
+	userService  *services.UserService
+	flagsService *services.UserFlagsService
 }
 
 func NewAuthenticationHandler(server server.GameServerInterface) *AuthenticationHandler {
 	return &AuthenticationHandler{
-		BaseHandler: *NewBaseHandler(server),
-		userService: services.NewUserService(server),
+		BaseHandler:  *NewBaseHandler(server),
+		userService:  services.NewUserService(server),
+		flagsService: services.NewUserFlagsService(server),
 	}
 }
 
@@ -42,6 +45,12 @@ func (h *AuthenticationHandler) handleUserLogin(session *server.PlayerSession, l
 
 	user, _ := h.userService.GetByUsername(loginRequestData.Username)
 	resources, _ := h.userService.GetUserWithResources(user.ID)
+	redirectDialogueId := ""
+	starterFlag, err := h.flagsService.GetUserFlag(user.ID, "has_selected_starter")
+
+	if err == pgx.ErrNoRows || err == nil && !starterFlag.IsActive.Bool { {
+		redirectDialogueId = "DEVELOPMENT"
+	}
 
 	session.PlayerId = user.ID
 	userDataPacket := &packets.UserData{
@@ -53,8 +62,10 @@ func (h *AuthenticationHandler) handleUserLogin(session *server.PlayerSession, l
 		StaminaCurrent: resources.StaminaCurrent.Int32,
 		StaminaMax:     resources.StaminaMax.Int32,
 	}
-	responsePacket := packets.NewAuthenticationResponse("user access token", userDataPacket, "")
+
+	responsePacket := packets.NewAuthenticationResponse("user access token", userDataPacket, redirectDialogueId)
 	h.Send(session, responsePacket)
+
 }
 
 func (h *AuthenticationHandler) validateLoginData(loginData *packets.AuthenticationRequest, userService *services.UserService) error {

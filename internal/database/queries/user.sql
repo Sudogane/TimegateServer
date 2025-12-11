@@ -97,9 +97,9 @@ ORDER BY e.chapter_id;
 
 -- name: GetAllUserFlags :many
 SELECT * FROM user_flags WHERE user_id = $1;
--- name: GetUserFlagByKey :one
-SELECT * FROM user_flags WHERE user_id = $1 AND flag_key = $2;
+-- name: GetUserFlagByName :one
+SELECT * FROM user_flags WHERE user_id = $1 AND flag_name = $2;
 -- name: CreateUserFlag :one
-INSERT INTO user_flags (user_id, flag_key, flag_value) VALUES ($1, $2, $3) RETURNING *;
+INSERT INTO user_flags (user_id, flag_name, is_active) VALUES ($1, $2, $3) RETURNING *;
 -- name: UpdateUserFlag :one
-UPDATE user_flags SET flag_value = $3 WHERE user_id = $1 AND flag_key = $2 RETURNING *;
+UPDATE user_flags SET is_active = $3 WHERE user_id = $1 AND flag_name = $2 RETURNING *;

@@ -167,22 +167,22 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 }
 
 const createUserFlag = `-- name: CreateUserFlag :one
-INSERT INTO user_flags (user_id, flag_key, flag_value) VALUES ($1, $2, $3) RETURNING user_id, flag_key, flag_value, created_at, updated_at
+INSERT INTO user_flags (user_id, flag_name, is_active) VALUES ($1, $2, $3) RETURNING user_id, flag_name, is_active, created_at, updated_at
 `
 
 type CreateUserFlagParams struct {
-	UserID    uuid.UUID `json:"user_id"`
-	FlagKey   string    `json:"flag_key"`
-	FlagValue []byte    `json:"flag_value"`
+	UserID   uuid.UUID   `json:"user_id"`
+	FlagName string      `json:"flag_name"`
+	IsActive pgtype.Bool `json:"is_active"`
 }
 
 func (q *Queries) CreateUserFlag(ctx context.Context, arg CreateUserFlagParams) (UserFlag, error) {
-	row := q.db.QueryRow(ctx, createUserFlag, arg.UserID, arg.FlagKey, arg.FlagValue)
+	row := q.db.QueryRow(ctx, createUserFlag, arg.UserID, arg.FlagName, arg.IsActive)
 	var i UserFlag
 	err := row.Scan(
 		&i.UserID,
-		&i.FlagKey,
-		&i.FlagValue,
+		&i.FlagName,
+		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -190,7 +190,7 @@ func (q *Queries) CreateUserFlag(ctx context.Context, arg CreateUserFlagParams) 
 }
 
 const getAllUserFlags = `-- name: GetAllUserFlags :many
-SELECT user_id, flag_key, flag_value, created_at, updated_at FROM user_flags WHERE user_id = $1
+SELECT user_id, flag_name, is_active, created_at, updated_at FROM user_flags WHERE user_id = $1
 `
 
 func (q *Queries) GetAllUserFlags(ctx context.Context, userID uuid.UUID) ([]UserFlag, error) {
@@ -204,8 +204,8 @@ func (q *Queries) GetAllUserFlags(ctx context.Context, userID uuid.UUID) ([]User
 		var i UserFlag
 		if err := rows.Scan(
 			&i.UserID,
-			&i.FlagKey,
-			&i.FlagValue,
+			&i.FlagName,
+			&i.IsActive,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -368,22 +368,22 @@ func (q *Queries) GetUserDigibank(ctx context.Context, userID uuid.UUID) ([]GetU
 	return items, nil
 }
 
-const getUserFlagByKey = `-- name: GetUserFlagByKey :one
-SELECT user_id, flag_key, flag_value, created_at, updated_at FROM user_flags WHERE user_id = $1 AND flag_key = $2
+const getUserFlagByName = `-- name: GetUserFlagByName :one
+SELECT user_id, flag_name, is_active, created_at, updated_at FROM user_flags WHERE user_id = $1 AND flag_name = $2
 `
 
-type GetUserFlagByKeyParams struct {
-	UserID  uuid.UUID `json:"user_id"`
-	FlagKey string    `json:"flag_key"`
+type GetUserFlagByNameParams struct {
+	UserID   uuid.UUID `json:"user_id"`
+	FlagName string    `json:"flag_name"`
 }
 
-func (q *Queries) GetUserFlagByKey(ctx context.Context, arg GetUserFlagByKeyParams) (UserFlag, error) {
-	row := q.db.QueryRow(ctx, getUserFlagByKey, arg.UserID, arg.FlagKey)
+func (q *Queries) GetUserFlagByName(ctx context.Context, arg GetUserFlagByNameParams) (UserFlag, error) {
+	row := q.db.QueryRow(ctx, getUserFlagByName, arg.UserID, arg.FlagName)
 	var i UserFlag
 	err := row.Scan(
 		&i.UserID,
-		&i.FlagKey,
-		&i.FlagValue,
+		&i.FlagName,
+		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -606,22 +606,22 @@ func (q *Queries) UnlockUserChapter(ctx context.Context, arg UnlockUserChapterPa
 }
 
 const updateUserFlag = `-- name: UpdateUserFlag :one
-UPDATE user_flags SET flag_value = $3 WHERE user_id = $1 AND flag_key = $2 RETURNING user_id, flag_key, flag_value, created_at, updated_at
+UPDATE user_flags SET is_active = $3 WHERE user_id = $1 AND flag_name = $2 RETURNING user_id, flag_name, is_active, created_at, updated_at
 `
 
 type UpdateUserFlagParams struct {
-	UserID    uuid.UUID `json:"user_id"`
-	FlagKey   string    `json:"flag_key"`
-	FlagValue []byte    `json:"flag_value"`
+	UserID   uuid.UUID   `json:"user_id"`
+	FlagName string      `json:"flag_name"`
+	IsActive pgtype.Bool `json:"is_active"`
 }
 
 func (q *Queries) UpdateUserFlag(ctx context.Context, arg UpdateUserFlagParams) (UserFlag, error) {
-	row := q.db.QueryRow(ctx, updateUserFlag, arg.UserID, arg.FlagKey, arg.FlagValue)
+	row := q.db.QueryRow(ctx, updateUserFlag, arg.UserID, arg.FlagName, arg.IsActive)
 	var i UserFlag
 	err := row.Scan(
 		&i.UserID,
-		&i.FlagKey,
-		&i.FlagValue,
+		&i.FlagName,
+		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

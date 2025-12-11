@@ -2,20 +2,20 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS user_flags (
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    flag_key TEXT NOT NULL UNIQUE,
-    flag_value JSONB DEFAULT '{}',
+    flag_name TEXT NOT NULL UNIQUE,
+    is_active BOOLEAN DEFAULT false,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY(user_id, flag_key)
+    PRIMARY KEY (user_id, flag_name)
 );
 
 CREATE INDEX IF NOT EXISTS idx_user_flags_user_id ON user_flags(user_id);
-CREATE INDEX IF NOT EXISTS idx_user_flags_flag_key ON user_flags(flag_key);
+CREATE INDEX IF NOT EXISTS idx_user_flags_flag_name ON user_flags(flag_name);
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE IF EXISTS user_flags;
 DROP INDEX IF EXISTS idx_user_flags_user_id;
-DROP INDEX IF EXISTS idx_user_flags_flag_key;
+DROP INDEX IF EXISTS idx_user_flags_flag_name;
 -- +goose StatementEnd
