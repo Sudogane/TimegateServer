@@ -27,6 +27,28 @@ CREATE TABLE IF NOT EXISTS user_digimon (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE OR REPLACE FUNCTION set_initial_digimon_stats()
+RETURNS TRIGGER AS $$
+BEGIN
+    SELECT 
+        base_health, base_mana, base_attack, base_defense, base_speed
+    INTO
+        NEW.health, NEW.mana, NEW.attack, NEW.defense, NEW.speed
+    FROM base_digimon
+    WHERE id = NEW.base_id;
+
+    NEW.current_health := NEW.health;
+    NEW.current_mana := NEW.mana;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_set_initial_digimon_stats
+    BEFORE INSERT ON user_digimon
+    FOR EACH ROW 
+    EXECUTE FUNCTION set_initial_digimon_stats();
+
 CREATE TABLE IF NOT EXISTS user_team (
     user_id UUID REFERENCES users(id),
     digimon_id UUID REFERENCES user_digimon(id),
@@ -48,4 +70,6 @@ CREATE TABLE IF NOT EXISTS user_digibank (
 DROP TABLE IF EXISTS user_team;
 DROP TABLE IF EXISTS user_digibank;
 DROP TABLE IF EXISTS user_digimon;
+DROP FUNCTION IF EXISTS set_initial_digimon_stats;
+DROP TRIGGER IF EXISTS trigger_set_initial_digimon_stats ON user_digimon;
 -- +goose StatementEnd
