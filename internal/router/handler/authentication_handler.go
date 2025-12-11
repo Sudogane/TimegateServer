@@ -48,7 +48,7 @@ func (h *AuthenticationHandler) handleUserLogin(session *server.PlayerSession, l
 	redirectDialogueId := ""
 	starterFlag, err := h.flagsService.GetUserFlag(user.ID, "has_selected_starter")
 
-	if err == pgx.ErrNoRows || err == nil && !starterFlag.IsActive.Bool { {
+	if err == pgx.ErrNoRows || err == nil && !starterFlag.IsActive.Bool {
 		redirectDialogueId = "DEVELOPMENT"
 	}
 
