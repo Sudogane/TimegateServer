@@ -79,7 +79,10 @@ const (
 	// Dialogue
 	PacketType_DIALOGUE_CHOICE_SELECTED PacketType = 5
 	PacketType_DIALOGUE_FINISHED        PacketType = 6
-	PacketType_DEVELOPMENT              PacketType = 999
+	// Digimon
+	PacketType_VIEW_DIGIBANK_REQUEST PacketType = 8
+	PacketType_VIEW_DIGIMON_REQUEST  PacketType = 9
+	PacketType_DEVELOPMENT           PacketType = 999
 )
 
 // Enum value maps for PacketType.
@@ -92,6 +95,8 @@ var (
 		4:   "DIGIMON_SELECTED",
 		5:   "DIALOGUE_CHOICE_SELECTED",
 		6:   "DIALOGUE_FINISHED",
+		8:   "VIEW_DIGIBANK_REQUEST",
+		9:   "VIEW_DIGIMON_REQUEST",
 		999: "DEVELOPMENT",
 	}
 	PacketType_value = map[string]int32{
@@ -102,6 +107,8 @@ var (
 		"DIGIMON_SELECTED":            4,
 		"DIALOGUE_CHOICE_SELECTED":    5,
 		"DIALOGUE_FINISHED":           6,
+		"VIEW_DIGIBANK_REQUEST":       8,
+		"VIEW_DIGIMON_REQUEST":        9,
 		"DEVELOPMENT":                 999,
 	}
 )
@@ -361,6 +368,7 @@ type FromServerToClient struct {
 	//	*FromServerToClient_ChapterDataResponse
 	//	*FromServerToClient_EpisodeDataResponse
 	//	*FromServerToClient_DialogueTrigger
+	//	*FromServerToClient_DigimonTeamViewResponse
 	Payload       isFromServerToClient_Payload `protobuf_oneof:"payload"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -457,6 +465,15 @@ func (x *FromServerToClient) GetDialogueTrigger() *DialogueTrigger {
 	return nil
 }
 
+func (x *FromServerToClient) GetDigimonTeamViewResponse() *DigimonTeamViewResponse {
+	if x != nil {
+		if x, ok := x.Payload.(*FromServerToClient_DigimonTeamViewResponse); ok {
+			return x.DigimonTeamViewResponse
+		}
+	}
+	return nil
+}
+
 type isFromServerToClient_Payload interface {
 	isFromServerToClient_Payload()
 }
@@ -485,6 +502,10 @@ type FromServerToClient_DialogueTrigger struct {
 	DialogueTrigger *DialogueTrigger `protobuf:"bytes,6,opt,name=dialogue_trigger,json=dialogueTrigger,proto3,oneof"`
 }
 
+type FromServerToClient_DigimonTeamViewResponse struct {
+	DigimonTeamViewResponse *DigimonTeamViewResponse `protobuf:"bytes,7,opt,name=digimon_team_view_response,json=digimonTeamViewResponse,proto3,oneof"`
+}
+
 func (*FromServerToClient_WebsocketId) isFromServerToClient_Payload() {}
 
 func (*FromServerToClient_ErrorResponse) isFromServerToClient_Payload() {}
@@ -496,6 +517,8 @@ func (*FromServerToClient_ChapterDataResponse) isFromServerToClient_Payload() {}
 func (*FromServerToClient_EpisodeDataResponse) isFromServerToClient_Payload() {}
 
 func (*FromServerToClient_DialogueTrigger) isFromServerToClient_Payload() {}
+
+func (*FromServerToClient_DigimonTeamViewResponse) isFromServerToClient_Payload() {}
 
 type ErrorResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -1216,6 +1239,263 @@ func (x *DialogueChoiceSelected) GetDialogueChoiceId() int32 {
 	return 0
 }
 
+// DIGIMON
+type DigibankResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Digimons      []*DigibankDigimonData `protobuf:"bytes,1,rep,name=digimons,proto3" json:"digimons,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DigibankResponse) Reset() {
+	*x = DigibankResponse{}
+	mi := &file_packets_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DigibankResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DigibankResponse) ProtoMessage() {}
+
+func (x *DigibankResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_packets_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DigibankResponse.ProtoReflect.Descriptor instead.
+func (*DigibankResponse) Descriptor() ([]byte, []int) {
+	return file_packets_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *DigibankResponse) GetDigimons() []*DigibankDigimonData {
+	if x != nil {
+		return x.Digimons
+	}
+	return nil
+}
+
+type DigibankDigimonData struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Species       string                 `protobuf:"bytes,1,opt,name=species,proto3" json:"species,omitempty"`
+	Position      int32                  `protobuf:"varint,2,opt,name=position,proto3" json:"position,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DigibankDigimonData) Reset() {
+	*x = DigibankDigimonData{}
+	mi := &file_packets_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DigibankDigimonData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DigibankDigimonData) ProtoMessage() {}
+
+func (x *DigibankDigimonData) ProtoReflect() protoreflect.Message {
+	mi := &file_packets_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DigibankDigimonData.ProtoReflect.Descriptor instead.
+func (*DigibankDigimonData) Descriptor() ([]byte, []int) {
+	return file_packets_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *DigibankDigimonData) GetSpecies() string {
+	if x != nil {
+		return x.Species
+	}
+	return ""
+}
+
+func (x *DigibankDigimonData) GetPosition() int32 {
+	if x != nil {
+		return x.Position
+	}
+	return 0
+}
+
+type DigimonTeamViewResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Digimon       *DigimonData           `protobuf:"bytes,1,opt,name=digimon,proto3" json:"digimon,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DigimonTeamViewResponse) Reset() {
+	*x = DigimonTeamViewResponse{}
+	mi := &file_packets_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DigimonTeamViewResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DigimonTeamViewResponse) ProtoMessage() {}
+
+func (x *DigimonTeamViewResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_packets_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DigimonTeamViewResponse.ProtoReflect.Descriptor instead.
+func (*DigimonTeamViewResponse) Descriptor() ([]byte, []int) {
+	return file_packets_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *DigimonTeamViewResponse) GetDigimon() *DigimonData {
+	if x != nil {
+		return x.Digimon
+	}
+	return nil
+}
+
+type DigimonData struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Species       string                 `protobuf:"bytes,1,opt,name=species,proto3" json:"species,omitempty"`
+	Level         int32                  `protobuf:"varint,2,opt,name=level,proto3" json:"level,omitempty"`
+	Exp           int32                  `protobuf:"varint,3,opt,name=exp,proto3" json:"exp,omitempty"`
+	CurrentHp     int32                  `protobuf:"varint,4,opt,name=current_hp,json=currentHp,proto3" json:"current_hp,omitempty"`
+	CurrentMp     int32                  `protobuf:"varint,5,opt,name=current_mp,json=currentMp,proto3" json:"current_mp,omitempty"`
+	Health        int32                  `protobuf:"varint,6,opt,name=health,proto3" json:"health,omitempty"`
+	Mana          int32                  `protobuf:"varint,7,opt,name=mana,proto3" json:"mana,omitempty"`
+	Attack        int32                  `protobuf:"varint,8,opt,name=attack,proto3" json:"attack,omitempty"`
+	Defense       int32                  `protobuf:"varint,9,opt,name=defense,proto3" json:"defense,omitempty"`
+	Speed         int32                  `protobuf:"varint,10,opt,name=speed,proto3" json:"speed,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DigimonData) Reset() {
+	*x = DigimonData{}
+	mi := &file_packets_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DigimonData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DigimonData) ProtoMessage() {}
+
+func (x *DigimonData) ProtoReflect() protoreflect.Message {
+	mi := &file_packets_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DigimonData.ProtoReflect.Descriptor instead.
+func (*DigimonData) Descriptor() ([]byte, []int) {
+	return file_packets_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *DigimonData) GetSpecies() string {
+	if x != nil {
+		return x.Species
+	}
+	return ""
+}
+
+func (x *DigimonData) GetLevel() int32 {
+	if x != nil {
+		return x.Level
+	}
+	return 0
+}
+
+func (x *DigimonData) GetExp() int32 {
+	if x != nil {
+		return x.Exp
+	}
+	return 0
+}
+
+func (x *DigimonData) GetCurrentHp() int32 {
+	if x != nil {
+		return x.CurrentHp
+	}
+	return 0
+}
+
+func (x *DigimonData) GetCurrentMp() int32 {
+	if x != nil {
+		return x.CurrentMp
+	}
+	return 0
+}
+
+func (x *DigimonData) GetHealth() int32 {
+	if x != nil {
+		return x.Health
+	}
+	return 0
+}
+
+func (x *DigimonData) GetMana() int32 {
+	if x != nil {
+		return x.Mana
+	}
+	return 0
+}
+
+func (x *DigimonData) GetAttack() int32 {
+	if x != nil {
+		return x.Attack
+	}
+	return 0
+}
+
+func (x *DigimonData) GetDefense() int32 {
+	if x != nil {
+		return x.Defense
+	}
+	return 0
+}
+
+func (x *DigimonData) GetSpeed() int32 {
+	if x != nil {
+		return x.Speed
+	}
+	return 0
+}
+
 // DEVELOPMENT
 type DigimonSelected struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
@@ -1226,7 +1506,7 @@ type DigimonSelected struct {
 
 func (x *DigimonSelected) Reset() {
 	*x = DigimonSelected{}
-	mi := &file_packets_proto_msgTypes[15]
+	mi := &file_packets_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1238,7 +1518,7 @@ func (x *DigimonSelected) String() string {
 func (*DigimonSelected) ProtoMessage() {}
 
 func (x *DigimonSelected) ProtoReflect() protoreflect.Message {
-	mi := &file_packets_proto_msgTypes[15]
+	mi := &file_packets_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1251,7 +1531,7 @@ func (x *DigimonSelected) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DigimonSelected.ProtoReflect.Descriptor instead.
 func (*DigimonSelected) Descriptor() ([]byte, []int) {
-	return file_packets_proto_rawDescGZIP(), []int{15}
+	return file_packets_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *DigimonSelected) GetDigimonSpecies() string {
@@ -1272,7 +1552,7 @@ type DevelopmentPacket struct {
 
 func (x *DevelopmentPacket) Reset() {
 	*x = DevelopmentPacket{}
-	mi := &file_packets_proto_msgTypes[16]
+	mi := &file_packets_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1284,7 +1564,7 @@ func (x *DevelopmentPacket) String() string {
 func (*DevelopmentPacket) ProtoMessage() {}
 
 func (x *DevelopmentPacket) ProtoReflect() protoreflect.Message {
-	mi := &file_packets_proto_msgTypes[16]
+	mi := &file_packets_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1297,7 +1577,7 @@ func (x *DevelopmentPacket) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DevelopmentPacket.ProtoReflect.Descriptor instead.
 func (*DevelopmentPacket) Descriptor() ([]byte, []int) {
-	return file_packets_proto_rawDescGZIP(), []int{16}
+	return file_packets_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *DevelopmentPacket) GetADD_DIGIMON_TO_TEAM() bool {
@@ -1337,14 +1617,15 @@ const file_packets_proto_rawDesc = "" +
 	"\x18dialogue_choice_selected\x18\r \x01(\v2\x1f.packets.DialogueChoiceSelectedH\x00R\x16dialogueChoiceSelected\x12H\n" +
 	"\x11dialogue_finished\x18\x0e \x01(\v2\x19.packets.DialogueFinishedH\x00R\x10dialogueFinished\x12/\n" +
 	"\x03dev\x18\x8fN \x01(\v2\x1a.packets.DevelopmentPacketH\x00R\x03devB\t\n" +
-	"\apayload\"\xfb\x03\n" +
+	"\apayload\"\xdc\x04\n" +
 	"\x12FromServerToClient\x12A\n" +
 	"\fwebsocket_id\x18\x01 \x01(\v2\x1c.packets.WebsocketIDResponseH\x00R\vwebsocketId\x12?\n" +
 	"\x0eerror_response\x18\x02 \x01(\v2\x16.packets.ErrorResponseH\x00R\rerrorResponse\x12Z\n" +
 	"\x17authentication_response\x18\x03 \x01(\v2\x1f.packets.AuthenticationResponseH\x00R\x16authenticationResponse\x12X\n" +
 	"\x15chapter_data_response\x18\x04 \x01(\v2\".packets.AccessibleChapterResponseH\x00R\x13chapterDataResponse\x12Y\n" +
 	"\x15episode_data_response\x18\x05 \x01(\v2#.packets.AccessibleEpisodesResponseH\x00R\x13episodeDataResponse\x12E\n" +
-	"\x10dialogue_trigger\x18\x06 \x01(\v2\x18.packets.DialogueTriggerH\x00R\x0fdialogueTriggerB\t\n" +
+	"\x10dialogue_trigger\x18\x06 \x01(\v2\x18.packets.DialogueTriggerH\x00R\x0fdialogueTrigger\x12_\n" +
+	"\x1adigimon_team_view_response\x18\a \x01(\v2 .packets.DigimonTeamViewResponseH\x00R\x17digimonTeamViewResponseB\t\n" +
 	"\apayload\"7\n" +
 	"\rErrorResponse\x12&\n" +
 	"\x04code\x18\x01 \x01(\x0e2\x12.packets.ErrorCodeR\x04code\"%\n" +
@@ -1397,7 +1678,28 @@ const file_packets_proto_rawDesc = "" +
 	"\x16DialogueChoiceSelected\x12\x1f\n" +
 	"\vdialogue_id\x18\x01 \x01(\tR\n" +
 	"dialogueId\x12,\n" +
-	"\x12dialogue_choice_id\x18\x02 \x01(\x05R\x10dialogueChoiceId\":\n" +
+	"\x12dialogue_choice_id\x18\x02 \x01(\x05R\x10dialogueChoiceId\"L\n" +
+	"\x10DigibankResponse\x128\n" +
+	"\bdigimons\x18\x01 \x03(\v2\x1c.packets.DigibankDigimonDataR\bdigimons\"K\n" +
+	"\x13DigibankDigimonData\x12\x18\n" +
+	"\aspecies\x18\x01 \x01(\tR\aspecies\x12\x1a\n" +
+	"\bposition\x18\x02 \x01(\x05R\bposition\"I\n" +
+	"\x17DigimonTeamViewResponse\x12.\n" +
+	"\adigimon\x18\x01 \x01(\v2\x14.packets.DigimonDataR\adigimon\"\x81\x02\n" +
+	"\vDigimonData\x12\x18\n" +
+	"\aspecies\x18\x01 \x01(\tR\aspecies\x12\x14\n" +
+	"\x05level\x18\x02 \x01(\x05R\x05level\x12\x10\n" +
+	"\x03exp\x18\x03 \x01(\x05R\x03exp\x12\x1d\n" +
+	"\n" +
+	"current_hp\x18\x04 \x01(\x05R\tcurrentHp\x12\x1d\n" +
+	"\n" +
+	"current_mp\x18\x05 \x01(\x05R\tcurrentMp\x12\x16\n" +
+	"\x06health\x18\x06 \x01(\x05R\x06health\x12\x12\n" +
+	"\x04mana\x18\a \x01(\x05R\x04mana\x12\x16\n" +
+	"\x06attack\x18\b \x01(\x05R\x06attack\x12\x18\n" +
+	"\adefense\x18\t \x01(\x05R\adefense\x12\x14\n" +
+	"\x05speed\x18\n" +
+	" \x01(\x05R\x05speed\":\n" +
 	"\x0fDigimonSelected\x12'\n" +
 	"\x0fdigimon_species\x18\x01 \x01(\tR\x0edigimonSpecies\"\x90\x01\n" +
 	"\x11DevelopmentPacket\x12-\n" +
@@ -1406,7 +1708,7 @@ const file_packets_proto_rawDesc = "" +
 	"\x0fSTARTER_SPECIES\x18\x03 \x01(\tR\x0eSTARTERSPECIES*-\n" +
 	"\x12AuthenticationType\x12\t\n" +
 	"\x05LOGIN\x10\x00\x12\f\n" +
-	"\bREGISTER\x10\x01*\xcc\x01\n" +
+	"\bREGISTER\x10\x01*\x81\x02\n" +
 	"\n" +
 	"PacketType\x12\n" +
 	"\n" +
@@ -1416,7 +1718,9 @@ const file_packets_proto_rawDesc = "" +
 	"\x1bEPISODES_BY_CHAPTER_REQUEST\x10\x03\x12\x14\n" +
 	"\x10DIGIMON_SELECTED\x10\x04\x12\x1c\n" +
 	"\x18DIALOGUE_CHOICE_SELECTED\x10\x05\x12\x15\n" +
-	"\x11DIALOGUE_FINISHED\x10\x06\x12\x10\n" +
+	"\x11DIALOGUE_FINISHED\x10\x06\x12\x19\n" +
+	"\x15VIEW_DIGIBANK_REQUEST\x10\b\x12\x18\n" +
+	"\x14VIEW_DIGIMON_REQUEST\x10\t\x12\x10\n" +
 	"\vDEVELOPMENT\x10\xe7\a*\x82\x01\n" +
 	"\tErrorCode\x12\x10\n" +
 	"\fUNKOWN_ERROR\x10\x00\x12\x17\n" +
@@ -1438,7 +1742,7 @@ func file_packets_proto_rawDescGZIP() []byte {
 }
 
 var file_packets_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_packets_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_packets_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
 var file_packets_proto_goTypes = []any{
 	(AuthenticationType)(0),            // 0: packets.AuthenticationType
 	(PacketType)(0),                    // 1: packets.PacketType
@@ -1458,34 +1762,41 @@ var file_packets_proto_goTypes = []any{
 	(*DialogueTrigger)(nil),            // 15: packets.DialogueTrigger
 	(*DialogueFinished)(nil),           // 16: packets.DialogueFinished
 	(*DialogueChoiceSelected)(nil),     // 17: packets.DialogueChoiceSelected
-	(*DigimonSelected)(nil),            // 18: packets.DigimonSelected
-	(*DevelopmentPacket)(nil),          // 19: packets.DevelopmentPacket
+	(*DigibankResponse)(nil),           // 18: packets.DigibankResponse
+	(*DigibankDigimonData)(nil),        // 19: packets.DigibankDigimonData
+	(*DigimonTeamViewResponse)(nil),    // 20: packets.DigimonTeamViewResponse
+	(*DigimonData)(nil),                // 21: packets.DigimonData
+	(*DigimonSelected)(nil),            // 22: packets.DigimonSelected
+	(*DevelopmentPacket)(nil),          // 23: packets.DevelopmentPacket
 }
 var file_packets_proto_depIdxs = []int32{
 	1,  // 0: packets.FromClientToServer.packet_type:type_name -> packets.PacketType
 	7,  // 1: packets.FromClientToServer.authentication_request:type_name -> packets.AuthenticationRequest
 	12, // 2: packets.FromClientToServer.episodes_by_chapter_request:type_name -> packets.EpisodesByChapterRequest
-	18, // 3: packets.FromClientToServer.digimon_selected:type_name -> packets.DigimonSelected
+	22, // 3: packets.FromClientToServer.digimon_selected:type_name -> packets.DigimonSelected
 	17, // 4: packets.FromClientToServer.dialogue_choice_selected:type_name -> packets.DialogueChoiceSelected
 	16, // 5: packets.FromClientToServer.dialogue_finished:type_name -> packets.DialogueFinished
-	19, // 6: packets.FromClientToServer.dev:type_name -> packets.DevelopmentPacket
+	23, // 6: packets.FromClientToServer.dev:type_name -> packets.DevelopmentPacket
 	6,  // 7: packets.FromServerToClient.websocket_id:type_name -> packets.WebsocketIDResponse
 	5,  // 8: packets.FromServerToClient.error_response:type_name -> packets.ErrorResponse
 	8,  // 9: packets.FromServerToClient.authentication_response:type_name -> packets.AuthenticationResponse
 	10, // 10: packets.FromServerToClient.chapter_data_response:type_name -> packets.AccessibleChapterResponse
 	13, // 11: packets.FromServerToClient.episode_data_response:type_name -> packets.AccessibleEpisodesResponse
 	15, // 12: packets.FromServerToClient.dialogue_trigger:type_name -> packets.DialogueTrigger
-	2,  // 13: packets.ErrorResponse.code:type_name -> packets.ErrorCode
-	0,  // 14: packets.AuthenticationRequest.type:type_name -> packets.AuthenticationType
-	9,  // 15: packets.AuthenticationResponse.user_data:type_name -> packets.UserData
-	15, // 16: packets.AuthenticationResponse.dialogue_trigger:type_name -> packets.DialogueTrigger
-	11, // 17: packets.AccessibleChapterResponse.chapters:type_name -> packets.ChapterData
-	14, // 18: packets.AccessibleEpisodesResponse.episodes:type_name -> packets.EpisodeData
-	19, // [19:19] is the sub-list for method output_type
-	19, // [19:19] is the sub-list for method input_type
-	19, // [19:19] is the sub-list for extension type_name
-	19, // [19:19] is the sub-list for extension extendee
-	0,  // [0:19] is the sub-list for field type_name
+	20, // 13: packets.FromServerToClient.digimon_team_view_response:type_name -> packets.DigimonTeamViewResponse
+	2,  // 14: packets.ErrorResponse.code:type_name -> packets.ErrorCode
+	0,  // 15: packets.AuthenticationRequest.type:type_name -> packets.AuthenticationType
+	9,  // 16: packets.AuthenticationResponse.user_data:type_name -> packets.UserData
+	15, // 17: packets.AuthenticationResponse.dialogue_trigger:type_name -> packets.DialogueTrigger
+	11, // 18: packets.AccessibleChapterResponse.chapters:type_name -> packets.ChapterData
+	14, // 19: packets.AccessibleEpisodesResponse.episodes:type_name -> packets.EpisodeData
+	19, // 20: packets.DigibankResponse.digimons:type_name -> packets.DigibankDigimonData
+	21, // 21: packets.DigimonTeamViewResponse.digimon:type_name -> packets.DigimonData
+	22, // [22:22] is the sub-list for method output_type
+	22, // [22:22] is the sub-list for method input_type
+	22, // [22:22] is the sub-list for extension type_name
+	22, // [22:22] is the sub-list for extension extendee
+	0,  // [0:22] is the sub-list for field type_name
 }
 
 func init() { file_packets_proto_init() }
@@ -1508,6 +1819,7 @@ func file_packets_proto_init() {
 		(*FromServerToClient_ChapterDataResponse)(nil),
 		(*FromServerToClient_EpisodeDataResponse)(nil),
 		(*FromServerToClient_DialogueTrigger)(nil),
+		(*FromServerToClient_DigimonTeamViewResponse)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1515,7 +1827,7 @@ func file_packets_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_packets_proto_rawDesc), len(file_packets_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   17,
+			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

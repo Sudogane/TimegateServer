@@ -38,3 +38,11 @@ func NewDialogueTrigger(dialogueId string) ServerPayload {
 		},
 	}
 }
+
+func NewDigimonTeamViewResponse(digimon *DigimonData) ServerPayload {
+	return &FromServerToClient_DigimonTeamViewResponse{
+		DigimonTeamViewResponse: &DigimonTeamViewResponse{
+			Digimon: digimon,
+		},
+	}
+}

@@ -280,7 +280,7 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 }
 
 const getUserDigibank = `-- name: GetUserDigibank :many
-SELECT ud.id, ud.user_id, ud.base_id, ud.nickname, ud.level, ud.exp, ud.friendship, ud.is_starter, ud.is_locked, ud.current_health, ud.current_mana, ud.health, ud.mana, ud.attack, ud.defense, ud.speed, ud.created_at, bd.id, bd.species, bd.base_health, bd.base_attack, bd.base_defense, bd.base_mana, bd.base_speed, bd.form, bd.attribute, bd.family, bd.element
+SELECT ud.id, ud.user_id, ud.base_id, ud.species, ud.nickname, ud.level, ud.exp, ud.friendship, ud.is_starter, ud.is_locked, ud.current_health, ud.current_mana, ud.health, ud.mana, ud.attack, ud.defense, ud.speed, ud.created_at, bd.id, bd.species, bd.base_health, bd.base_attack, bd.base_defense, bd.base_mana, bd.base_speed, bd.form, bd.attribute, bd.family, bd.element
 FROM user_digibank ub
 JOIN user_digimon ud ON ub.digimon_id = ud.id
 JOIN base_digimon bd ON ud.base_id = bd.id
@@ -292,6 +292,7 @@ type GetUserDigibankRow struct {
 	ID            uuid.UUID        `json:"id"`
 	UserID        pgtype.UUID      `json:"user_id"`
 	BaseID        pgtype.Int4      `json:"base_id"`
+	Species       pgtype.Text      `json:"species"`
 	Nickname      pgtype.Text      `json:"nickname"`
 	Level         pgtype.Int4      `json:"level"`
 	Exp           pgtype.Int4      `json:"exp"`
@@ -307,7 +308,7 @@ type GetUserDigibankRow struct {
 	Speed         pgtype.Int4      `json:"speed"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
 	ID_2          int32            `json:"id_2"`
-	Species       string           `json:"species"`
+	Species_2     string           `json:"species_2"`
 	BaseHealth    int32            `json:"base_health"`
 	BaseAttack    int32            `json:"base_attack"`
 	BaseDefense   int32            `json:"base_defense"`
@@ -332,6 +333,7 @@ func (q *Queries) GetUserDigibank(ctx context.Context, userID uuid.UUID) ([]GetU
 			&i.ID,
 			&i.UserID,
 			&i.BaseID,
+			&i.Species,
 			&i.Nickname,
 			&i.Level,
 			&i.Exp,
@@ -347,7 +349,7 @@ func (q *Queries) GetUserDigibank(ctx context.Context, userID uuid.UUID) ([]GetU
 			&i.Speed,
 			&i.CreatedAt,
 			&i.ID_2,
-			&i.Species,
+			&i.Species_2,
 			&i.BaseHealth,
 			&i.BaseAttack,
 			&i.BaseDefense,
@@ -391,7 +393,7 @@ func (q *Queries) GetUserFlagByName(ctx context.Context, arg GetUserFlagByNamePa
 }
 
 const getUserTeam = `-- name: GetUserTeam :many
-SELECT ut.team_slot, ud.id, ud.user_id, ud.base_id, ud.nickname, ud.level, ud.exp, ud.friendship, ud.is_starter, ud.is_locked, ud.current_health, ud.current_mana, ud.health, ud.mana, ud.attack, ud.defense, ud.speed, ud.created_at, bd.id, bd.species, bd.base_health, bd.base_attack, bd.base_defense, bd.base_mana, bd.base_speed, bd.form, bd.attribute, bd.family, bd.element
+SELECT ut.team_slot, ud.id, ud.user_id, ud.base_id, ud.species, ud.nickname, ud.level, ud.exp, ud.friendship, ud.is_starter, ud.is_locked, ud.current_health, ud.current_mana, ud.health, ud.mana, ud.attack, ud.defense, ud.speed, ud.created_at, bd.id, bd.species, bd.base_health, bd.base_attack, bd.base_defense, bd.base_mana, bd.base_speed, bd.form, bd.attribute, bd.family, bd.element
 FROM user_team ut
 JOIN user_digimon ud ON ut.digimon_id = ud.id
 JOIN base_digimon bd ON ud.base_id = bd.id
@@ -404,6 +406,7 @@ type GetUserTeamRow struct {
 	ID            uuid.UUID        `json:"id"`
 	UserID        pgtype.UUID      `json:"user_id"`
 	BaseID        pgtype.Int4      `json:"base_id"`
+	Species       pgtype.Text      `json:"species"`
 	Nickname      pgtype.Text      `json:"nickname"`
 	Level         pgtype.Int4      `json:"level"`
 	Exp           pgtype.Int4      `json:"exp"`
@@ -419,7 +422,7 @@ type GetUserTeamRow struct {
 	Speed         pgtype.Int4      `json:"speed"`
 	CreatedAt     pgtype.Timestamp `json:"created_at"`
 	ID_2          int32            `json:"id_2"`
-	Species       string           `json:"species"`
+	Species_2     string           `json:"species_2"`
 	BaseHealth    int32            `json:"base_health"`
 	BaseAttack    int32            `json:"base_attack"`
 	BaseDefense   int32            `json:"base_defense"`
@@ -445,6 +448,7 @@ func (q *Queries) GetUserTeam(ctx context.Context, userID uuid.UUID) ([]GetUserT
 			&i.ID,
 			&i.UserID,
 			&i.BaseID,
+			&i.Species,
 			&i.Nickname,
 			&i.Level,
 			&i.Exp,
@@ -460,7 +464,7 @@ func (q *Queries) GetUserTeam(ctx context.Context, userID uuid.UUID) ([]GetUserT
 			&i.Speed,
 			&i.CreatedAt,
 			&i.ID_2,
-			&i.Species,
+			&i.Species_2,
 			&i.BaseHealth,
 			&i.BaseAttack,
 			&i.BaseDefense,

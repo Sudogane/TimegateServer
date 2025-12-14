@@ -13,7 +13,7 @@ import (
 )
 
 const createUserDigimon = `-- name: CreateUserDigimon :one
-INSERT INTO user_digimon (user_id, base_id, is_starter, is_locked) VALUES ($1, $2, $3, $4) RETURNING id, user_id, base_id, nickname, level, exp, friendship, is_starter, is_locked, current_health, current_mana, health, mana, attack, defense, speed, created_at
+INSERT INTO user_digimon (user_id, base_id, is_starter, is_locked) VALUES ($1, $2, $3, $4) RETURNING id, user_id, base_id, species, nickname, level, exp, friendship, is_starter, is_locked, current_health, current_mana, health, mana, attack, defense, speed, created_at
 `
 
 type CreateUserDigimonParams struct {
@@ -35,6 +35,7 @@ func (q *Queries) CreateUserDigimon(ctx context.Context, arg CreateUserDigimonPa
 		&i.ID,
 		&i.UserID,
 		&i.BaseID,
+		&i.Species,
 		&i.Nickname,
 		&i.Level,
 		&i.Exp,
@@ -90,7 +91,7 @@ func (q *Queries) GetAllBaseDigimon(ctx context.Context) ([]BaseDigimon, error) 
 }
 
 const getAllUserDigimon = `-- name: GetAllUserDigimon :many
-SELECT id, user_id, base_id, nickname, level, exp, friendship, is_starter, is_locked, current_health, current_mana, health, mana, attack, defense, speed, created_at FROM user_digimon WHERE id = $1
+SELECT id, user_id, base_id, species, nickname, level, exp, friendship, is_starter, is_locked, current_health, current_mana, health, mana, attack, defense, speed, created_at FROM user_digimon WHERE id = $1
 `
 
 func (q *Queries) GetAllUserDigimon(ctx context.Context, id uuid.UUID) ([]UserDigimon, error) {
@@ -106,6 +107,7 @@ func (q *Queries) GetAllUserDigimon(ctx context.Context, id uuid.UUID) ([]UserDi
 			&i.ID,
 			&i.UserID,
 			&i.BaseID,
+			&i.Species,
 			&i.Nickname,
 			&i.Level,
 			&i.Exp,
@@ -178,7 +180,7 @@ func (q *Queries) GetBaseDigimonBySpecies(ctx context.Context, species string) (
 }
 
 const getUserDigimon = `-- name: GetUserDigimon :one
-SELECT id, user_id, base_id, nickname, level, exp, friendship, is_starter, is_locked, current_health, current_mana, health, mana, attack, defense, speed, created_at FROM user_digimon WHERE id = $1 AND user_id = $2
+SELECT id, user_id, base_id, species, nickname, level, exp, friendship, is_starter, is_locked, current_health, current_mana, health, mana, attack, defense, speed, created_at FROM user_digimon WHERE id = $1 AND user_id = $2
 `
 
 type GetUserDigimonParams struct {
@@ -193,6 +195,7 @@ func (q *Queries) GetUserDigimon(ctx context.Context, arg GetUserDigimonParams) 
 		&i.ID,
 		&i.UserID,
 		&i.BaseID,
+		&i.Species,
 		&i.Nickname,
 		&i.Level,
 		&i.Exp,
@@ -212,7 +215,7 @@ func (q *Queries) GetUserDigimon(ctx context.Context, arg GetUserDigimonParams) 
 }
 
 const getUserDigimonByStarterFlag = `-- name: GetUserDigimonByStarterFlag :one
-SELECT id, user_id, base_id, nickname, level, exp, friendship, is_starter, is_locked, current_health, current_mana, health, mana, attack, defense, speed, created_at FROM user_digimon WHERE user_id = $1 AND is_starter = true LIMIT 1
+SELECT id, user_id, base_id, species, nickname, level, exp, friendship, is_starter, is_locked, current_health, current_mana, health, mana, attack, defense, speed, created_at FROM user_digimon WHERE user_id = $1 AND is_starter = true LIMIT 1
 `
 
 func (q *Queries) GetUserDigimonByStarterFlag(ctx context.Context, userID pgtype.UUID) (UserDigimon, error) {
@@ -222,6 +225,7 @@ func (q *Queries) GetUserDigimonByStarterFlag(ctx context.Context, userID pgtype
 		&i.ID,
 		&i.UserID,
 		&i.BaseID,
+		&i.Species,
 		&i.Nickname,
 		&i.Level,
 		&i.Exp,

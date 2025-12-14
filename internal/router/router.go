@@ -16,7 +16,8 @@ type Router struct {
 	server   server.GameServerInterface
 
 	userService     *services.UserService
-	userFlagService *services.UserFlagsService // <- Try to implement it INSIDE user service later.
+	userFlagService *services.UserFlagsService // TODO: Implement inside user service(?)
+	digimonService  *services.DigimonService
 }
 
 func NewRouter(server server.GameServerInterface) *Router {
@@ -26,6 +27,7 @@ func NewRouter(server server.GameServerInterface) *Router {
 
 		userService:     services.NewUserService(server),
 		userFlagService: services.NewUserFlagsService(server),
+		digimonService:  services.NewDigimonService(server),
 	}
 
 	router.RegisterRoutes()
@@ -67,6 +69,10 @@ func (r *Router) RegisterRoutes() {
 	stagesHandler := handler.NewStagesHandler(r.server)
 	r.RegisterRouter(packets.PacketType_CHAPTER_DATA_REQUEST, stagesHandler)
 	r.RegisterRouter(packets.PacketType_EPISODES_BY_CHAPTER_REQUEST, stagesHandler)
+
+	// --> Digimon ::
+	digimonHandler := handler.NewDigimonHandler(r.server, r.digimonService)
+	r.RegisterRouter(packets.PacketType_VIEW_DIGIMON_REQUEST, digimonHandler)
 
 	// --> Development ::
 	developmentHandler := handler.NewDevelopmentHandle(r.userService, r.userFlagService)

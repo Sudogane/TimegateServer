@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS user_flags (
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    flag_name TEXT NOT NULL UNIQUE,
+    flag_name TEXT NOT NULL,
     is_active BOOLEAN DEFAULT false,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),

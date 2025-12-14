@@ -94,6 +94,7 @@ type UserDigimon struct {
 	ID            uuid.UUID        `json:"id"`
 	UserID        pgtype.UUID      `json:"user_id"`
 	BaseID        pgtype.Int4      `json:"base_id"`
+	Species       pgtype.Text      `json:"species"`
 	Nickname      pgtype.Text      `json:"nickname"`
 	Level         pgtype.Int4      `json:"level"`
 	Exp           pgtype.Int4      `json:"exp"`
