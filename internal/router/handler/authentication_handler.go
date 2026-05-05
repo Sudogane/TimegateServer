@@ -26,12 +26,17 @@ func NewAuthenticationHandler(server server.GameServerInterface) *Authentication
 
 func (h *AuthenticationHandler) Handle(session *server.PlayerSession, msg *packets.FromClientToServer) error {
 	packet := msg.GetAuthenticationRequest()
+	if packet == nil {
+		return errors.New("invalid packet")
+	}
 
 	switch packet.GetType() {
 	case packets.AuthenticationType_LOGIN:
 		h.handleUserLogin(session, packet)
+		return nil
 	case packets.AuthenticationType_REGISTER:
 		h.handleUserRegister(session, packet)
+		return nil
 	}
 
 	return nil
@@ -43,8 +48,19 @@ func (h *AuthenticationHandler) handleUserLogin(session *server.PlayerSession, l
 		return
 	}
 
-	user, _ := h.userService.GetByUsername(loginRequestData.Username)
-	resources, _ := h.userService.GetUserWithResources(user.ID)
+	user, err := h.userService.GetByUsername(loginRequestData.Username)
+	if err != nil {
+		h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)
+		session.Log("ERROR", err.Error())
+		return
+	}
+
+	resources, err := h.userService.GetUserWithResources(user.ID)
+	if err != nil {
+		h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)
+		session.Log("ERROR", err.Error())
+		return
+	}
 	redirectDialogueId := ""
 	starterFlag, err := h.flagsService.GetUserFlag(user.ID, "has_selected_starter")
 

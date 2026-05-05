@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -28,7 +29,7 @@ func loadEnv() error {
 func startDatabase() (*database.Repository, error) {
 	databaseString := os.Getenv("POSTGRES_DATABASE_URL")
 	if databaseString == "" {
-		return nil, fmt.Errorf("POSTGRES_DATABASE_URL is not set")
+		return nil, errors.New("POSTGRES_DATABASE_URL is not set")
 	}
 
 	fmt.Println("Connecting to database")
@@ -42,17 +43,30 @@ func startDatabase() (*database.Repository, error) {
 	return databaseRepository, nil
 }
 
-func startRedisCache() *cache.RedisClient {
+func startRedisCache() (*cache.RedisClient, error) {
 	fmt.Println("Connecting to redis")
+	redisAddr := os.Getenv("REDIS_ADDR")
+	redisUsr := os.Getenv("REDIS_USR")
+	redisPwd := os.Getenv("REDIS_PWD")
+
+	if redisAddr == "" {
+		redisAddr = "localhost:6379"
+		fmt.Println("REDIS_ADDR not defined, running on local redis.")
+	}
+
 	rdb := cache.NewRedisClient(&redis.Options{
-		Addr:     os.Getenv("REDIS_ADDR"),
-		Username: os.Getenv("REDIS_USR"),
-		Password: os.Getenv("REDIS_PWD"),
+		Addr:     redisAddr,
+		Username: redisUsr,
+		Password: redisPwd,
 		DB:       0,
 	})
 
+	if rdb == nil {
+		return nil, errors.New("Failed to connect to redis")
+	}
+
 	fmt.Println("Connected to redis")
-	return rdb
+	return rdb, nil
 }
 
 func main() {
@@ -71,7 +85,11 @@ func main() {
 	}
 	defer databaseRepository.Close()
 
-	redisDb := startRedisCache()
+	redisDb, err := startRedisCache()
+	if err != nil {
+		fmt.Println("Error starting redis: ", err)
+		return
+	}
 	defer redisDb.Close()
 
 	gameServer := server.NewGameServer(databaseRepository, redisDb)
@@ -80,9 +98,13 @@ func main() {
 	// Gracefull Shutdown
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 
 	server := &http.Server{
-		Addr:         ":" + os.Getenv("PORT"),
+		Addr:         ":" + port,
 		Handler:      nil,
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
@@ -94,7 +116,7 @@ func main() {
 	})
 
 	go func() {
-		fmt.Printf("WebSocket server listening on ws://localhost:%s/ws\n", os.Getenv("PORT"))
+		fmt.Printf("WebSocket server listening on ws://localhost:%s/ws\n", port)
 
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			fmt.Println("Error starting server: ", err)
