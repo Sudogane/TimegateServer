@@ -96,6 +96,10 @@ func (h *AuthenticationHandler) validateLoginData(loginData *packets.Authenticat
 		return errors.New("length of username is too short or too long")
 	}
 
+	if len(password) < 4 {
+		return errors.New("length of password is too short or too long")
+	}
+
 	invalidCredentialsError := errors.New("invalid credentials")
 
 	user, doesUsernameExist := userService.GetByUsername(username)
@@ -149,8 +153,8 @@ func (h *AuthenticationHandler) validateRegisterData(registerData *packets.Authe
 		return packets.ErrorCode_USERNAME_TOO_SHORT_OR_LONG, errors.New("username too long or too short")
 	}
 
-	if len(password) < 3 {
-		return packets.ErrorCode_PASSWORD_TOO_SHORT, errors.New("username too long or too short")
+	if len(password) < 4 {
+		return packets.ErrorCode_PASSWORD_TOO_SHORT, errors.New("password is too short")
 	}
 
 	isTaken, err := userService.CheckIfUsernameIsTaken(username)
