@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/google/uuid"
 	"github.com/sudogane/project_timegate/internal/server"
 	"github.com/sudogane/project_timegate/internal/services"
 	"github.com/sudogane/project_timegate/pkg/packets"
@@ -32,8 +33,16 @@ func (h *DialogueHandler) Handle(session *server.PlayerSession, msg *packets.Fro
 }
 
 func (h *DialogueHandler) onDialogueChoiceSelected(session *server.PlayerSession, choice *packets.DialogueChoiceSelected) {
+	if choice == nil || session.PlayerId == uuid.Nil {
+		return
+	}
+
 	dialogueId := choice.GetDialogueId()
 	choiceId := choice.GetDialogueChoiceId()
+
+	if dialogueId == "" || choiceId < 0 {
+		return
+	}
 
 	if dialogueId == "DEVELOPMENT" {
 		speciesIdMap := map[string]int32{
@@ -42,9 +51,12 @@ func (h *DialogueHandler) onDialogueChoiceSelected(session *server.PlayerSession
 			"Chronomon: Holy Mode": 3,
 		}
 		starterDigimons := []string{"Alphamon", "Morphomon", "Chronomon: Holy Mode"}
-		digimonSelected := starterDigimons[choiceId]
-		if digimonSelected == "" {
+
+		var digimonSelected string
+		if choiceId < 0 || choiceId >= int32(len(starterDigimons)) {
 			digimonSelected = starterDigimons[0]
+		} else {
+			digimonSelected = starterDigimons[choiceId]
 		}
 
 		err := h.userService.GiveDigimonToUser(session.PlayerId, speciesIdMap[digimonSelected], true, true)

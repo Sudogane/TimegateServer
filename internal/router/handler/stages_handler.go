@@ -23,6 +23,12 @@ func NewStagesHandler(server server.GameServerInterface) *StagesHandler {
 func (h *StagesHandler) Handle(session *server.PlayerSession, msg *packets.FromClientToServer) error {
 	packetType := msg.GetPacketType()
 
+	/*
+		!
+		!	Insert Tutorial validation here
+		!
+	*/
+
 	switch packetType {
 	case packets.PacketType_CHAPTER_DATA_REQUEST:
 		h.onGetUserChapters(session)

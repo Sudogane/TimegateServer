@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/google/uuid"
 	"github.com/sudogane/project_timegate/internal/server"
 	"github.com/sudogane/project_timegate/internal/services"
 	"github.com/sudogane/project_timegate/pkg/packets"
@@ -32,6 +33,12 @@ func (h *DigimonHandler) Handle(session *server.PlayerSession, msg *packets.From
 
 func (h *DigimonHandler) onShowDigimon(session *server.PlayerSession) {
 	userDigimon, err := h.digimonService.GetUserDigimonByStarterFlag(session.PlayerId)
+
+	if userDigimon.ID == uuid.Nil {
+		h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)
+		return
+	}
+
 	if err != nil {
 		session.Log("ERROR", err.Error())
 		h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)
