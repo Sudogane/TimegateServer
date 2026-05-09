@@ -30,6 +30,12 @@ func (h *AuthenticationHandler) Handle(session *server.PlayerSession, msg *packe
 		return errors.New("invalid packet")
 	}
 
+	gameVersion := msg.GetGameVersion()
+	if gameVersion != "0.0.1TB" {
+		h.SendError(session, packets.ErrorCode_INVALID_VERSION)
+		return nil
+	}
+
 	switch packet.GetType() {
 	case packets.AuthenticationType_LOGIN:
 		h.handleUserLogin(session, packet)
