@@ -2,7 +2,7 @@ package services
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -26,14 +26,14 @@ func (s *DigimonService) GetUserDigimonByStarterFlag(userId uuid.UUID) (models.U
 	if cachedStarter, err := s.rdb.Get(key); err == nil {
 		var starter models.UserDigimon
 		if err := json.Unmarshal([]byte(cachedStarter), &starter); err != nil {
-			return models.UserDigimon{}, fmt.Errorf("[Digimon Service] failed to unmarshal user digimon: %w", err)
+			return models.UserDigimon{}, errors.New("[Digimon Service] failed to unmarshal user digimon: " + err.Error())
 		}
 		return starter, nil
 	}
 
 	starter, err := s.db.GetUserDigimonByStarterFlag(s.ctx, pgtype.UUID{Bytes: userId, Valid: true})
 	if err != nil {
-		return models.UserDigimon{}, fmt.Errorf("[Digimon Service] failed to get by id: %w", err)
+		return models.UserDigimon{}, errors.New("[Digimon Service] failed to get digimon by Id: " + err.Error())
 	}
 
 	s.rdb.Set(key, starter)

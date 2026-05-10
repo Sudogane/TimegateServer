@@ -1,7 +1,7 @@
 package managers
 
 import (
-	"fmt"
+	"errors"
 	"sync"
 
 	"github.com/gorilla/websocket"
@@ -30,7 +30,7 @@ func (um *UserManager) Authenticate(username, password string) (*models.User, er
 			return user, nil
 		}
 
-		return nil, fmt.Errorf("wrong credentials")
+		return nil, errors.New("Invalid Credentials")
 	}
 
 	user := &models.User{

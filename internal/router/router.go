@@ -46,13 +46,13 @@ func (r *Router) Route(session *server.PlayerSession, msg *packets.FromClientToS
 	r.mutex.RUnlock()
 
 	if !exists {
-		session.Log("ERROR", "No handler found for packet type: "+msg.PacketType.String()+" Contents: "+msg.String())
+		session.Logger.Errorw("ERROR", "No handler found for packet type: "+msg.PacketType.String()+" Contents: "+msg.String())
 		return
 	}
 
 	err := handler.Handle(session, msg)
 	if err != nil {
-		session.Log("ERROR", fmt.Sprintf("Error handling packet type: %s, error: %s", msg.PacketType.String(), err.Error()))
+		session.Logger.Errorw("ERROR", fmt.Sprintf("Error handling packet type: %s, error: %s", msg.PacketType.String(), err.Error()))
 		return
 	}
 }

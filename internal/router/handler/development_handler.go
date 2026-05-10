@@ -21,7 +21,7 @@ func NewDevelopmentHandle(userService *services.UserService, flagsService *servi
 }
 
 func (h *DevelopmentHandler) Handle(session *server.PlayerSession, msg *packets.FromClientToServer) error {
-	session.Log("INFO", "Received development packet")
+	//session.Log("INFO", "Received development packet")
 
 	//h.flagsService.SetUserFlag(session.PlayerId, "test_flag", "{\"active\": true}")
 

@@ -61,14 +61,14 @@ func (h *DialogueHandler) onDialogueChoiceSelected(session *server.PlayerSession
 
 		err := h.userService.GiveDigimonToUser(session.PlayerId, speciesIdMap[digimonSelected], true, true)
 		if err != nil {
-			session.Log("ERROR", err.Error())
+			session.Logger.Errorw(err.Error())
 			h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)
 			return
 		}
 
 		err = h.flagsService.UpdateUserFlag(session.PlayerId, "has_selected_starter", true)
 		if err != nil {
-			session.Log("ERROR", err.Error())
+			session.Logger.Errorw(err.Error())
 			h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)
 			return
 		}

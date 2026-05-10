@@ -2,7 +2,7 @@ package services
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -28,7 +28,7 @@ func (s *UserFlagsService) GetAllUserFlags(userId uuid.UUID) ([]models.UserFlag,
 	if cachedFlags, err := s.rdb.Get(key); err == nil {
 		var flags []models.UserFlag
 		if err := json.Unmarshal([]byte(cachedFlags), &flags); err != nil {
-			return nil, fmt.Errorf("[User Flags Service] failed to unmarshal user: %w", err)
+			return nil, errors.New("[User Flags Service] failed to unmarshal user: " + err.Error())
 		}
 		return flags, nil
 	}
@@ -47,7 +47,7 @@ func (s *UserFlagsService) GetUserFlag(userId uuid.UUID, name string) (models.Us
 	if cachedFlag, err := s.rdb.Get(key); err == nil {
 		var flag models.UserFlag
 		if err := json.Unmarshal([]byte(cachedFlag), &flag); err != nil {
-			return models.UserFlag{}, fmt.Errorf("[User Flags Service] failed to unmarshal user: %w", err)
+			return models.UserFlag{}, errors.New("[User Flags Service] failed to unmarshal user: " + err.Error())
 		}
 		return flag, nil
 	}

@@ -40,7 +40,7 @@ func (h *DigimonHandler) onShowDigimon(session *server.PlayerSession) {
 	}
 
 	if err != nil {
-		session.Log("ERROR", err.Error())
+		session.Logger.Errorw(err.Error())
 		h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)
 		return
 	}

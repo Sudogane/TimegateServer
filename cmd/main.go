@@ -14,6 +14,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/sudogane/project_timegate/internal/database"
 	"github.com/sudogane/project_timegate/internal/database/cache"
+	"github.com/sudogane/project_timegate/internal/logger"
 	"github.com/sudogane/project_timegate/internal/router"
 	"github.com/sudogane/project_timegate/internal/server"
 )
@@ -26,32 +27,32 @@ func loadEnv() error {
 	return nil
 }
 
-func startDatabase() (*database.Repository, error) {
+func startDatabase(logger *logger.Logger) (*database.Repository, error) {
 	databaseString := os.Getenv("POSTGRES_DATABASE_URL")
 	if databaseString == "" {
 		return nil, errors.New("POSTGRES_DATABASE_URL is not set")
 	}
 
-	fmt.Println("Connecting to database")
+	logger.Log("INFO", "Connecting to the Database...")
 	databaseRepository, err := database.NewRepository(databaseString)
 
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Println("Connected to database")
+	logger.Log("INFO", "Sucessfully connected to the Database")
 	return databaseRepository, nil
 }
 
-func startRedisCache() (*cache.RedisClient, error) {
-	fmt.Println("Connecting to redis")
+func startRedisCache(logger *logger.Logger) (*cache.RedisClient, error) {
+	logger.Log("INFO", "Connecting to redis...")
 	redisAddr := os.Getenv("REDIS_ADDR")
 	redisUsr := os.Getenv("REDIS_USR")
 	redisPwd := os.Getenv("REDIS_PWD")
 
 	if redisAddr == "" {
 		redisAddr = "localhost:6379"
-		fmt.Println("REDIS_ADDR not defined, running on local redis.")
+		logger.Log("INFO", "RedisAddr not Defined on Env, Running on local.")
 	}
 
 	rdb := cache.NewRedisClient(&redis.Options{
@@ -65,34 +66,38 @@ func startRedisCache() (*cache.RedisClient, error) {
 		return nil, errors.New("Failed to connect to redis")
 	}
 
-	fmt.Println("Connected to redis")
+	logger.Log("INFO", "Connected to Redis")
 	return rdb, nil
 }
 
 func main() {
-	fmt.Println("Starting Server")
-
-	err := loadEnv()
+	logger, err := logger.NewLogger()
 	if err != nil {
-		fmt.Println("Error loading .env: ", err)
+		fmt.Println("Error loading custom logger: ", err)
 		return
 	}
 
-	databaseRepository, err := startDatabase()
+	err = loadEnv()
 	if err != nil {
-		fmt.Println("Error starting database: ", err)
+		logger.Log("ERROR", "Env Loading Error: "+err.Error())
+		return
+	}
+
+	databaseRepository, err := startDatabase(logger)
+	if err != nil {
+		logger.Log("ERROR", "Database Error: "+err.Error())
 		return
 	}
 	defer databaseRepository.Close()
 
-	redisDb, err := startRedisCache()
+	redisDb, err := startRedisCache(logger)
 	if err != nil {
-		fmt.Println("Error starting redis: ", err)
+		logger.Log("ERROR", "Redis Error: "+err.Error())
 		return
 	}
 	defer redisDb.Close()
 
-	gameServer := server.NewGameServer(databaseRepository, redisDb)
+	gameServer := server.NewGameServer(databaseRepository, redisDb, logger)
 	router := router.NewRouter(gameServer)
 
 	// Gracefull Shutdown
@@ -116,23 +121,23 @@ func main() {
 	})
 
 	go func() {
-		fmt.Printf("WebSocket server listening on ws://localhost:%s/ws\n", port)
+		logger.Log("INFO", "WebSocket server listening on ws://localhost:"+port+"/ws")
 
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			fmt.Println("Error starting server: ", err)
+			logger.Log("ERROR", "Server Startup Error: "+err.Error())
 			stop <- os.Interrupt
 		}
 	}()
 
 	// Wait for shutdown
 	<-stop
-	fmt.Println("Shutting down server...")
+	logger.Log("INFO", "Shutting down server...")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	if err := server.Shutdown(ctx); err != nil {
-		fmt.Println("Error shutting down server: ", err)
+		logger.Log("ERROR", "Error while shutting down server: "+err.Error())
 	}
 
-	fmt.Println("Server shut down")
+	logger.Log("INFO", "Server down.")
 }

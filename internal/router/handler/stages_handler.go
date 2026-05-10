@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"fmt"
-
 	"github.com/sudogane/project_timegate/internal/server"
 	"github.com/sudogane/project_timegate/internal/services"
 	"github.com/sudogane/project_timegate/pkg/packets"
@@ -42,7 +40,7 @@ func (h *StagesHandler) Handle(session *server.PlayerSession, msg *packets.FromC
 func (h *StagesHandler) onGetUserChapters(session *server.PlayerSession) {
 	chapters, err := h.userService.GetUnlockedChapters(session.PlayerId)
 	if err != nil {
-		fmt.Println("failed to get unlocked chapters: ", err)
+		session.Logger.Errorw("failed to get unlocked chapters: ", err)
 		return
 	}
 
@@ -73,7 +71,7 @@ func (h *StagesHandler) onGetUserEpisodesByChapter(session *server.PlayerSession
 
 	episodes, err := h.userService.GetAvailableEpisodesByChapterId(chapterId, session.PlayerId)
 	if err != nil {
-		fmt.Println("failed to get available episodes: ", err)
+		session.Logger.Errorw("failed to get available chapters: ", err)
 		return
 	}
 

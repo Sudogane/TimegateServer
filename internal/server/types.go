@@ -2,13 +2,14 @@ package server
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/sudogane/project_timegate/internal/database/cache"
 	"github.com/sudogane/project_timegate/internal/database/models"
+	"github.com/sudogane/project_timegate/internal/logger"
 	"github.com/sudogane/project_timegate/pkg/packets"
+	"go.uber.org/zap"
 )
 
 type GameServerInterface interface {
@@ -20,6 +21,7 @@ type GameServerInterface interface {
 	GetRDB() *cache.RedisClient
 	Ctx() context.Context
 	SendErrorMessage(sessionId string, code packets.ErrorCode)
+	GetLogger() *logger.Logger
 }
 
 type RouterInterface interface {
@@ -32,13 +34,5 @@ type PlayerSession struct {
 	SendChan chan *packets.FromServerToClient
 
 	PlayerId uuid.UUID
-}
-
-func (s *PlayerSession) Log(messageType string, message string) {
-	var playerId string
-	if s.PlayerId != uuid.Nil {
-		playerId = s.PlayerId.String()
-	}
-
-	fmt.Printf("[%s] %s: %s\n", playerId, messageType, message)
+	Logger   *zap.SugaredLogger
 }

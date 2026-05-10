@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"sync"
 
@@ -12,6 +11,7 @@ import (
 	"github.com/sudogane/project_timegate/internal/database"
 	"github.com/sudogane/project_timegate/internal/database/cache"
 	"github.com/sudogane/project_timegate/internal/database/models"
+	"github.com/sudogane/project_timegate/internal/logger"
 	"github.com/sudogane/project_timegate/pkg/packets"
 	"google.golang.org/protobuf/proto"
 )
@@ -21,6 +21,7 @@ type GameServer struct {
 	mutex    sync.RWMutex
 	db       *database.Repository
 	rdb      *cache.RedisClient
+	logger   *logger.Logger
 }
 
 var upgrader = websocket.Upgrader{
@@ -29,11 +30,12 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
-func NewGameServer(db *database.Repository, rdb *cache.RedisClient) *GameServer {
+func NewGameServer(db *database.Repository, rdb *cache.RedisClient, l *logger.Logger) *GameServer {
 	gs := &GameServer{
 		sessions: make(map[string]*PlayerSession),
 		db:       db,
 		rdb:      rdb,
+		logger:   l,
 	}
 
 	return gs
@@ -77,21 +79,25 @@ func (gs *GameServer) GetSession(sessionId string) *PlayerSession {
 	return session
 }
 
+func (gs *GameServer) GetLogger() *logger.Logger {
+	return gs.logger
+}
+
 func (gs *GameServer) HandleWebsocket(w http.ResponseWriter, r *http.Request, router RouterInterface) {
-	fmt.Println("New Websocket connection received")
+	gs.logger.Infow("New WebSocket connection Received")
 	conn, err := upgrader.Upgrade(w, r, nil)
 
 	if err != nil {
-		fmt.Println("Error upgrading websocket")
+		gs.logger.Errorw("Error while upgrading WebSocket: " + err.Error())
 		return
 	}
 
 	sessionId := uuid.NewString()
-
 	session := &PlayerSession{
 		ID:       sessionId,
 		Conn:     conn,
 		SendChan: make(chan *packets.FromServerToClient),
+		Logger:   gs.logger.WithSession(sessionId, uuid.Nil),
 	}
 
 	gs.AddSession(session)
@@ -114,7 +120,7 @@ func (gs *GameServer) ReadLoop(session *PlayerSession, router RouterInterface) {
 		if messageType == websocket.BinaryMessage {
 			fromClient := &packets.FromClientToServer{}
 			if err := proto.Unmarshal(data, fromClient); err != nil {
-				session.Log("ERROR", "Error unmarshaling proto"+err.Error())
+				session.Logger.Errorw("Error unmarshaling proto" + err.Error())
 				continue
 			}
 
@@ -133,26 +139,26 @@ func (gs *GameServer) WriteLoop(session *PlayerSession) {
 		writer, err := session.Conn.NextWriter(websocket.BinaryMessage)
 
 		if err != nil {
-			session.Log("ERROR", "Error creating next writer")
+			session.Logger.Errorw("Error creating next writer")
 			return
 		}
 
 		data, err := proto.Marshal(packet)
 		if err != nil {
-			session.Log("ERROR", "Error marshaling proto")
+			session.Logger.Errorw("Error marshaling proto")
 			return
 		}
 
 		_, err = writer.Write(data)
 		if err != nil {
-			session.Log("ERROR", "Error writing data")
+			session.Logger.Errorw("Error writing data")
 			return
 		}
 
 		writer.Write([]byte{'\n'})
 
 		if err := writer.Close(); err != nil {
-			session.Log("ERROR", "Error closing writer")
+			session.Logger.Errorw("Error closing writer")
 			return
 		}
 	}

@@ -57,14 +57,14 @@ func (h *AuthenticationHandler) handleUserLogin(session *server.PlayerSession, l
 	user, err := h.userService.GetByUsername(loginRequestData.Username)
 	if err != nil {
 		h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)
-		session.Log("ERROR", err.Error())
+		session.Logger.Errorw(err.Error())
 		return
 	}
 
 	resources, err := h.userService.GetUserWithResources(user.ID)
 	if err != nil {
 		h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)
-		session.Log("ERROR", err.Error())
+		session.Logger.Errorw(err.Error())
 		return
 	}
 	redirectDialogueId := ""
@@ -75,6 +75,7 @@ func (h *AuthenticationHandler) handleUserLogin(session *server.PlayerSession, l
 	}
 
 	session.PlayerId = user.ID
+	session.Logger = h.server.GetLogger().WithSession(session.ID, session.PlayerId)
 	userDataPacket := &packets.UserData{
 		Username:       user.Username,
 		Level:          resources.Level.Int32,
@@ -130,7 +131,7 @@ func (h *AuthenticationHandler) handleUserRegister(session *server.PlayerSession
 	user, err := h.userService.CreateUserWithResources(registerRequestData.GetUsername(), hashedPassword)
 	if err != nil {
 		h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)
-		session.Log("ERROR", err.Error())
+		session.Logger.Errorw(err.Error())
 		return
 	}
 

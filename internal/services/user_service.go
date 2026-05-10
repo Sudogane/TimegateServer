@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
@@ -31,14 +32,14 @@ func (us *UserService) GetById(id uuid.UUID) (*models.User, error) {
 	if cachedUser, err := us.rdb.Get(key); err == nil {
 		var user models.User
 		if err := json.Unmarshal([]byte(cachedUser), &user); err != nil {
-			return nil, fmt.Errorf("[User Service] failed to unmarshal user: %w", err)
+			return nil, errors.New("[User Service] failed to unmarshal user: " + err.Error())
 		}
 		return &user, nil
 	}
 
 	user, err := us.db.GetUserById(us.ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("[User Service] failed to get by id: %w", err)
+		return nil, errors.New("[User Service] failed to get user by ID: " + err.Error())
 	}
 
 	us.rdb.Set(key, user)
@@ -51,14 +52,14 @@ func (us *UserService) GetByUsername(username string) (*models.User, error) {
 	if cachedUser, err := us.rdb.Get(key); err == nil {
 		var user models.User
 		if err := json.Unmarshal([]byte(cachedUser), &user); err != nil {
-			return nil, fmt.Errorf("[User Service] failed to unmarshal user: %w", err)
+			return nil, errors.New("[User Service] failed to unmarshal user: " + err.Error())
 		}
 		return &user, nil
 	}
 
 	user, err := us.db.GetUserByUsername(us.ctx, username)
 	if err != nil {
-		return nil, fmt.Errorf("[User Service] failed to get by username: %w", err)
+		return nil, errors.New("[User Service] failed to unmarshal user: " + err.Error())
 	}
 
 	us.rdb.Set(key, user)
@@ -71,14 +72,14 @@ func (us *UserService) GetUserWithResources(id uuid.UUID) (*models.GetUserWithRe
 	if cachedUser, err := us.rdb.Get(key); err == nil {
 		var user models.GetUserWithResourcesRow
 		if err := json.Unmarshal([]byte(cachedUser), &user); err != nil {
-			return nil, fmt.Errorf("[User Service] failed to unmarshal user: %w", err)
+			return nil, errors.New("[User Service] failed to unmarshal user: " + err.Error())
 		}
 		return &user, nil
 	}
 
 	user, err := us.db.GetUserWithResources(us.ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("[User Service] failed to get by id: %w", err)
+		return nil, errors.New("[User Service] failed to get user by id: " + err.Error())
 	}
 
 	us.rdb.Set(key, user)
@@ -91,14 +92,14 @@ func (us *UserService) GetUnlockedChapters(id uuid.UUID) ([]models.GetUserUnlock
 	if cachedChapters, err := us.rdb.Get(key); err == nil {
 		var chapters []models.GetUserUnlockedChaptersRow
 		if err := json.Unmarshal([]byte(cachedChapters), &chapters); err != nil {
-			return nil, fmt.Errorf("[User Service] failed to unmarshal user: %w", err)
+			return nil, errors.New("[User Service] failed to unmarshal user: " + err.Error())
 		}
 		return chapters, nil
 	}
 
 	chapters, err := us.db.GetUserUnlockedChapters(us.ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("[User Service] failed to get by id: %w", err)
+		return nil, errors.New("[User Service] failed to get user by id: " + err.Error())
 	}
 
 	us.rdb.Set(key, chapters)
@@ -127,7 +128,7 @@ func (us *UserService) GetAvailableEpisodesByChapterId(chapterId int32, userId u
 	if cachedEpisodes, err := us.rdb.Get(key); err == nil {
 		var episodes []models.Episode
 		if err := json.Unmarshal([]byte(cachedEpisodes), &episodes); err != nil {
-			return nil, fmt.Errorf("[User Service] failed to unmarshal user: %w", err)
+			return nil, errors.New("[User Service] failed to unmarshal user: " + err.Error())
 		}
 		return episodes, nil
 	}
@@ -138,7 +139,7 @@ func (us *UserService) GetAvailableEpisodesByChapterId(chapterId int32, userId u
 	})
 
 	if err != nil {
-		return nil, fmt.Errorf("[User Service] getting episodes: %w", err)
+		return nil, errors.New("[User Service] failed to get user episodes: " + err.Error())
 	}
 
 	us.rdb.Set(key, episodes)
@@ -151,7 +152,7 @@ func (us *UserService) GetAvailableStagesByEpisodeId(episodeId int32, userId uui
 	if cachedStages, err := us.rdb.Get(key); err == nil {
 		var stages []models.Stage
 		if err := json.Unmarshal([]byte(cachedStages), &stages); err != nil {
-			return nil, fmt.Errorf("[User Service] failed to unmarshal user: %w", err)
+			return nil, errors.New("[User Service] failed to unmarshal user: " + err.Error())
 		}
 		return stages, nil
 	}
@@ -162,7 +163,7 @@ func (us *UserService) GetAvailableStagesByEpisodeId(episodeId int32, userId uui
 	})
 
 	if err != nil {
-		return nil, fmt.Errorf("[User Service] getting stages: %w", err)
+		return nil, errors.New("[User Service] failed to get user stages: " + err.Error())
 	}
 
 	us.rdb.Set(key, stages)
@@ -174,14 +175,14 @@ func (us *UserService) GiveDigimonToUser(userId uuid.UUID, digimonId int32, isSt
 	if cachedStarter, err := us.rdb.Get(cacheKey); err == nil {
 		var starter models.UserDigimon
 		if err := json.Unmarshal([]byte(cachedStarter), &starter); err != nil {
-			return fmt.Errorf("[User Service] failed to unmarshal user digimon: %w", err)
+			return errors.New("[User Service] failed unmarshal user digimon: " + err.Error())
 		}
-		return fmt.Errorf("[User Service] user already has a starter digimon")
+		return errors.New("[User Service] User already has a starter")
 	}
 
 	if doesUserHaveStarter, _ := us.db.GetUserDigimonByStarterFlag(us.ctx, pgtype.UUID{Bytes: userId, Valid: true}); doesUserHaveStarter.ID != uuid.Nil && isStarter {
 		us.rdb.Set(cacheKey, doesUserHaveStarter)
-		return fmt.Errorf("[User Service] user already has a starter digimon")
+		return errors.New("[User Service] User already has a starter")
 	}
 
 	_, err := us.db.CreateUserDigimon(us.ctx, models.CreateUserDigimonParams{
@@ -192,7 +193,7 @@ func (us *UserService) GiveDigimonToUser(userId uuid.UUID, digimonId int32, isSt
 	})
 
 	if err != nil {
-		return fmt.Errorf("[User Service] create user digimon error: %w", err)
+		return errors.New("[User Service] Error creating user starter: " + err.Error())
 	}
 
 	return nil
