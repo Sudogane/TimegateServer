@@ -9,15 +9,17 @@ import (
 
 type DialogueHandler struct {
 	BaseHandler
-	userService  *services.UserService
-	flagsService *services.UserFlagsService
+	userService            *services.UserService
+	flagsService           *services.UserFlagsService
+	userAchievementService *services.UserAchievementsService
 }
 
-func NewDialogueHandler(userService *services.UserService, flagsService *services.UserFlagsService) *DialogueHandler {
+func NewDialogueHandler(server server.GameServerInterface, userService *services.UserService, flagsService *services.UserFlagsService, userAchievementService *services.UserAchievementsService) *DialogueHandler {
 	return &DialogueHandler{
-		BaseHandler:  *NewBaseHandler(nil),
-		userService:  userService,
-		flagsService: flagsService,
+		BaseHandler:            *NewBaseHandler(server),
+		userService:            userService,
+		flagsService:           flagsService,
+		userAchievementService: userAchievementService,
 	}
 }
 
@@ -27,6 +29,8 @@ func (h *DialogueHandler) Handle(session *server.PlayerSession, msg *packets.Fro
 	switch packetType {
 	case packets.PacketType_DIALOGUE_CHOICE_SELECTED:
 		h.onDialogueChoiceSelected(session, msg.GetDialogueChoiceSelected())
+	case packets.PacketType_DIALOGUE_FINISHED:
+		h.onDialogueFinished(session, msg.GetDialogueFinished())
 	}
 
 	return nil
@@ -73,4 +77,41 @@ func (h *DialogueHandler) onDialogueChoiceSelected(session *server.PlayerSession
 			return
 		}
 	}
+}
+
+type DialogueAchievements struct {
+	DialogueId    string
+	AchievementId int
+}
+
+func (h *DialogueHandler) onDialogueFinished(session *server.PlayerSession, data *packets.DialogueFinished) {
+	// TEMPORARY ZONE
+	dialogueAchievements := []DialogueAchievements{
+		{DialogueId: "DEVELOPMENT", AchievementId: 3},
+		{DialogueId: "DEBUG", AchievementId: 1},
+		{DialogueId: "DBG", AchievementId: 2},
+	}
+
+	for _, da := range dialogueAchievements {
+		if da.DialogueId == data.GetDialogueId() {
+			achievementFromDb, err := h.userAchievementService.GetAchievement(int32(da.AchievementId))
+			if err != nil {
+				session.Logger.Errorw(err.Error())
+				h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)
+				return
+			}
+
+			h.userAchievementService.GiveAchievementToUser(session.PlayerId, da.AchievementId)
+			responsePacket := &packets.FromServerToClient_AchievementObtained{
+				AchievementObtained: &packets.AchievementObtained{
+					Achievement: packets.NewAchievementResponse(achievementFromDb.Name, ""),
+				},
+			}
+
+			session.Logger.Info("ENVIADO ACHIEVEMENT")
+
+			h.Send(session, responsePacket)
+		}
+	}
+	// TEMPORARY ZONE
 }

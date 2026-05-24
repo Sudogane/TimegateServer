@@ -15,9 +15,10 @@ type Router struct {
 	mutex    sync.RWMutex
 	server   server.GameServerInterface
 
-	userService     *services.UserService
-	userFlagService *services.UserFlagsService // TODO: Implement inside user service(?)
-	digimonService  *services.DigimonService
+	userService             *services.UserService
+	userFlagService         *services.UserFlagsService // TODO: Implement inside user service(?)
+	digimonService          *services.DigimonService
+	userAchievementsService *services.UserAchievementsService
 }
 
 func NewRouter(server server.GameServerInterface) *Router {
@@ -25,9 +26,10 @@ func NewRouter(server server.GameServerInterface) *Router {
 		handlers: make(map[packets.PacketType]handler.Handler),
 		server:   server,
 
-		userService:     services.NewUserService(server),
-		userFlagService: services.NewUserFlagsService(server),
-		digimonService:  services.NewDigimonService(server),
+		userService:             services.NewUserService(server),
+		userFlagService:         services.NewUserFlagsService(server),
+		digimonService:          services.NewDigimonService(server),
+		userAchievementsService: services.NewUserAchievementsService(server),
 	}
 
 	router.RegisterRoutes()
@@ -62,8 +64,9 @@ func (r *Router) RegisterRoutes() {
 	r.RegisterRouter(packets.PacketType_AUTHENTICATION_REQUEST, handler.NewAuthenticationHandler(r.server))
 
 	// --> Dialogue ::
-	dialogueHandler := handler.NewDialogueHandler(r.userService, r.userFlagService)
+	dialogueHandler := handler.NewDialogueHandler(r.server, r.userService, r.userFlagService, r.userAchievementsService)
 	r.RegisterRouter(packets.PacketType_DIALOGUE_CHOICE_SELECTED, dialogueHandler)
+	r.RegisterRouter(packets.PacketType_DIALOGUE_FINISHED, dialogueHandler)
 
 	// --> Stages ::
 	stagesHandler := handler.NewStagesHandler(r.server)
@@ -75,6 +78,6 @@ func (r *Router) RegisterRoutes() {
 	r.RegisterRouter(packets.PacketType_VIEW_DIGIMON_REQUEST, digimonHandler)
 
 	// --> Development ::
-	developmentHandler := handler.NewDevelopmentHandle(r.userService, r.userFlagService)
+	developmentHandler := handler.NewDevelopmentHandle(r.server, r.userAchievementsService)
 	r.RegisterRouter(packets.PacketType_DEVELOPMENT, developmentHandler)
 }

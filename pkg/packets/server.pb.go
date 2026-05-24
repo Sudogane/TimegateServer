@@ -92,6 +92,8 @@ type FromServerToClient struct {
 	//	*FromServerToClient_EpisodeDataResponse
 	//	*FromServerToClient_DialogueTrigger
 	//	*FromServerToClient_DigimonTeamViewResponse
+	//	*FromServerToClient_GetAllAchievements
+	//	*FromServerToClient_AchievementObtained
 	Payload       isFromServerToClient_Payload `protobuf_oneof:"payload"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -204,6 +206,24 @@ func (x *FromServerToClient) GetDigimonTeamViewResponse() *DigimonTeamViewRespon
 	return nil
 }
 
+func (x *FromServerToClient) GetGetAllAchievements() *GetAllAchievementsResponse {
+	if x != nil {
+		if x, ok := x.Payload.(*FromServerToClient_GetAllAchievements); ok {
+			return x.GetAllAchievements
+		}
+	}
+	return nil
+}
+
+func (x *FromServerToClient) GetAchievementObtained() *AchievementObtained {
+	if x != nil {
+		if x, ok := x.Payload.(*FromServerToClient_AchievementObtained); ok {
+			return x.AchievementObtained
+		}
+	}
+	return nil
+}
+
 type isFromServerToClient_Payload interface {
 	isFromServerToClient_Payload()
 }
@@ -236,6 +256,14 @@ type FromServerToClient_DigimonTeamViewResponse struct {
 	DigimonTeamViewResponse *DigimonTeamViewResponse `protobuf:"bytes,16,opt,name=digimon_team_view_response,json=digimonTeamViewResponse,proto3,oneof"`
 }
 
+type FromServerToClient_GetAllAchievements struct {
+	GetAllAchievements *GetAllAchievementsResponse `protobuf:"bytes,17,opt,name=get_all_achievements,json=getAllAchievements,proto3,oneof"`
+}
+
+type FromServerToClient_AchievementObtained struct {
+	AchievementObtained *AchievementObtained `protobuf:"bytes,18,opt,name=achievement_obtained,json=achievementObtained,proto3,oneof"`
+}
+
 func (*FromServerToClient_WebsocketId) isFromServerToClient_Payload() {}
 
 func (*FromServerToClient_ErrorResponse) isFromServerToClient_Payload() {}
@@ -249,6 +277,10 @@ func (*FromServerToClient_EpisodeDataResponse) isFromServerToClient_Payload() {}
 func (*FromServerToClient_DialogueTrigger) isFromServerToClient_Payload() {}
 
 func (*FromServerToClient_DigimonTeamViewResponse) isFromServerToClient_Payload() {}
+
+func (*FromServerToClient_GetAllAchievements) isFromServerToClient_Payload() {}
+
+func (*FromServerToClient_AchievementObtained) isFromServerToClient_Payload() {}
 
 type ErrorResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -1026,11 +1058,159 @@ func (x *DigimonData) GetSpeed() int32 {
 	return 0
 }
 
+type AchievementData struct {
+	state                protoimpl.MessageState `protogen:"open.v1"`
+	AchievementGroupName string                 `protobuf:"bytes,1,opt,name=achievement_group_name,json=achievementGroupName,proto3" json:"achievement_group_name,omitempty"`
+	AchievementName      string                 `protobuf:"bytes,2,opt,name=achievement_name,json=achievementName,proto3" json:"achievement_name,omitempty"`
+	ObtainedDate         string                 `protobuf:"bytes,3,opt,name=obtained_date,json=obtainedDate,proto3" json:"obtained_date,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *AchievementData) Reset() {
+	*x = AchievementData{}
+	mi := &file_server_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AchievementData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AchievementData) ProtoMessage() {}
+
+func (x *AchievementData) ProtoReflect() protoreflect.Message {
+	mi := &file_server_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AchievementData.ProtoReflect.Descriptor instead.
+func (*AchievementData) Descriptor() ([]byte, []int) {
+	return file_server_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *AchievementData) GetAchievementGroupName() string {
+	if x != nil {
+		return x.AchievementGroupName
+	}
+	return ""
+}
+
+func (x *AchievementData) GetAchievementName() string {
+	if x != nil {
+		return x.AchievementName
+	}
+	return ""
+}
+
+func (x *AchievementData) GetObtainedDate() string {
+	if x != nil {
+		return x.ObtainedDate
+	}
+	return ""
+}
+
+type GetAllAchievementsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Achievement   []*AchievementData     `protobuf:"bytes,1,rep,name=achievement,proto3" json:"achievement,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAllAchievementsResponse) Reset() {
+	*x = GetAllAchievementsResponse{}
+	mi := &file_server_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAllAchievementsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAllAchievementsResponse) ProtoMessage() {}
+
+func (x *GetAllAchievementsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_server_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAllAchievementsResponse.ProtoReflect.Descriptor instead.
+func (*GetAllAchievementsResponse) Descriptor() ([]byte, []int) {
+	return file_server_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *GetAllAchievementsResponse) GetAchievement() []*AchievementData {
+	if x != nil {
+		return x.Achievement
+	}
+	return nil
+}
+
+type AchievementObtained struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Achievement   *AchievementData       `protobuf:"bytes,1,opt,name=achievement,proto3" json:"achievement,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AchievementObtained) Reset() {
+	*x = AchievementObtained{}
+	mi := &file_server_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AchievementObtained) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AchievementObtained) ProtoMessage() {}
+
+func (x *AchievementObtained) ProtoReflect() protoreflect.Message {
+	mi := &file_server_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AchievementObtained.ProtoReflect.Descriptor instead.
+func (*AchievementObtained) Descriptor() ([]byte, []int) {
+	return file_server_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *AchievementObtained) GetAchievement() *AchievementData {
+	if x != nil {
+		return x.Achievement
+	}
+	return nil
+}
+
 var File_server_proto protoreflect.FileDescriptor
 
 const file_server_proto_rawDesc = "" +
 	"\n" +
-	"\fserver.proto\x12\apackets\"\x83\x05\n" +
+	"\fserver.proto\x12\apackets\"\xaf\x06\n" +
 	"\x12FromServerToClient\x12%\n" +
 	"\x0eserver_version\x18\x01 \x01(\tR\rserverVersion\x12A\n" +
 	"\fwebsocket_id\x18\n" +
@@ -1040,7 +1220,9 @@ const file_server_proto_rawDesc = "" +
 	"\x15chapter_data_response\x18\r \x01(\v2\".packets.AccessibleChapterResponseH\x00R\x13chapterDataResponse\x12Y\n" +
 	"\x15episode_data_response\x18\x0e \x01(\v2#.packets.AccessibleEpisodesResponseH\x00R\x13episodeDataResponse\x12E\n" +
 	"\x10dialogue_trigger\x18\x0f \x01(\v2\x18.packets.DialogueTriggerH\x00R\x0fdialogueTrigger\x12_\n" +
-	"\x1adigimon_team_view_response\x18\x10 \x01(\v2 .packets.DigimonTeamViewResponseH\x00R\x17digimonTeamViewResponseB\t\n" +
+	"\x1adigimon_team_view_response\x18\x10 \x01(\v2 .packets.DigimonTeamViewResponseH\x00R\x17digimonTeamViewResponse\x12W\n" +
+	"\x14get_all_achievements\x18\x11 \x01(\v2#.packets.GetAllAchievementsResponseH\x00R\x12getAllAchievements\x12Q\n" +
+	"\x14achievement_obtained\x18\x12 \x01(\v2\x1c.packets.AchievementObtainedH\x00R\x13achievementObtainedB\t\n" +
 	"\apayload\"7\n" +
 	"\rErrorResponse\x12&\n" +
 	"\x04code\x18\x01 \x01(\x0e2\x12.packets.ErrorCodeR\x04code\"%\n" +
@@ -1100,7 +1282,15 @@ const file_server_proto_rawDesc = "" +
 	"\x06attack\x18\b \x01(\x05R\x06attack\x12\x18\n" +
 	"\adefense\x18\t \x01(\x05R\adefense\x12\x14\n" +
 	"\x05speed\x18\n" +
-	" \x01(\x05R\x05speed*\x97\x01\n" +
+	" \x01(\x05R\x05speed\"\x97\x01\n" +
+	"\x0fAchievementData\x124\n" +
+	"\x16achievement_group_name\x18\x01 \x01(\tR\x14achievementGroupName\x12)\n" +
+	"\x10achievement_name\x18\x02 \x01(\tR\x0fachievementName\x12#\n" +
+	"\robtained_date\x18\x03 \x01(\tR\fobtainedDate\"X\n" +
+	"\x1aGetAllAchievementsResponse\x12:\n" +
+	"\vachievement\x18\x01 \x03(\v2\x18.packets.AchievementDataR\vachievement\"Q\n" +
+	"\x13AchievementObtained\x12:\n" +
+	"\vachievement\x18\x01 \x01(\v2\x18.packets.AchievementDataR\vachievement*\x97\x01\n" +
 	"\tErrorCode\x12\x10\n" +
 	"\fUNKOWN_ERROR\x10\x00\x12\x17\n" +
 	"\x13INVALID_CREDENTIALS\x10\x01\x12\x12\n" +
@@ -1122,7 +1312,7 @@ func file_server_proto_rawDescGZIP() []byte {
 }
 
 var file_server_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_server_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_server_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_server_proto_goTypes = []any{
 	(ErrorCode)(0),                     // 0: packets.ErrorCode
 	(*FromServerToClient)(nil),         // 1: packets.FromServerToClient
@@ -1139,6 +1329,9 @@ var file_server_proto_goTypes = []any{
 	(*DigibankDigimonData)(nil),        // 12: packets.DigibankDigimonData
 	(*DigimonTeamViewResponse)(nil),    // 13: packets.DigimonTeamViewResponse
 	(*DigimonData)(nil),                // 14: packets.DigimonData
+	(*AchievementData)(nil),            // 15: packets.AchievementData
+	(*GetAllAchievementsResponse)(nil), // 16: packets.GetAllAchievementsResponse
+	(*AchievementObtained)(nil),        // 17: packets.AchievementObtained
 }
 var file_server_proto_depIdxs = []int32{
 	3,  // 0: packets.FromServerToClient.websocket_id:type_name -> packets.WebsocketIDResponse
@@ -1148,18 +1341,22 @@ var file_server_proto_depIdxs = []int32{
 	8,  // 4: packets.FromServerToClient.episode_data_response:type_name -> packets.AccessibleEpisodesResponse
 	10, // 5: packets.FromServerToClient.dialogue_trigger:type_name -> packets.DialogueTrigger
 	13, // 6: packets.FromServerToClient.digimon_team_view_response:type_name -> packets.DigimonTeamViewResponse
-	0,  // 7: packets.ErrorResponse.code:type_name -> packets.ErrorCode
-	5,  // 8: packets.AuthenticationResponse.user_data:type_name -> packets.UserData
-	10, // 9: packets.AuthenticationResponse.dialogue_trigger:type_name -> packets.DialogueTrigger
-	7,  // 10: packets.AccessibleChapterResponse.chapters:type_name -> packets.ChapterData
-	9,  // 11: packets.AccessibleEpisodesResponse.episodes:type_name -> packets.EpisodeData
-	12, // 12: packets.DigibankResponse.digimons:type_name -> packets.DigibankDigimonData
-	14, // 13: packets.DigimonTeamViewResponse.digimon:type_name -> packets.DigimonData
-	14, // [14:14] is the sub-list for method output_type
-	14, // [14:14] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	16, // 7: packets.FromServerToClient.get_all_achievements:type_name -> packets.GetAllAchievementsResponse
+	17, // 8: packets.FromServerToClient.achievement_obtained:type_name -> packets.AchievementObtained
+	0,  // 9: packets.ErrorResponse.code:type_name -> packets.ErrorCode
+	5,  // 10: packets.AuthenticationResponse.user_data:type_name -> packets.UserData
+	10, // 11: packets.AuthenticationResponse.dialogue_trigger:type_name -> packets.DialogueTrigger
+	7,  // 12: packets.AccessibleChapterResponse.chapters:type_name -> packets.ChapterData
+	9,  // 13: packets.AccessibleEpisodesResponse.episodes:type_name -> packets.EpisodeData
+	12, // 14: packets.DigibankResponse.digimons:type_name -> packets.DigibankDigimonData
+	14, // 15: packets.DigimonTeamViewResponse.digimon:type_name -> packets.DigimonData
+	15, // 16: packets.GetAllAchievementsResponse.achievement:type_name -> packets.AchievementData
+	15, // 17: packets.AchievementObtained.achievement:type_name -> packets.AchievementData
+	18, // [18:18] is the sub-list for method output_type
+	18, // [18:18] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_server_proto_init() }
@@ -1175,6 +1372,8 @@ func file_server_proto_init() {
 		(*FromServerToClient_EpisodeDataResponse)(nil),
 		(*FromServerToClient_DialogueTrigger)(nil),
 		(*FromServerToClient_DigimonTeamViewResponse)(nil),
+		(*FromServerToClient_GetAllAchievements)(nil),
+		(*FromServerToClient_AchievementObtained)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1182,7 +1381,7 @@ func file_server_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_server_proto_rawDesc), len(file_server_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   14,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

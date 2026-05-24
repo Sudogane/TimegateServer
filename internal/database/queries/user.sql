@@ -103,3 +103,36 @@ SELECT * FROM user_flags WHERE user_id = $1 AND flag_name = $2;
 INSERT INTO user_flags (user_id, flag_name, is_active) VALUES ($1, $2, $3) RETURNING *;
 -- name: UpdateUserFlag :one
 UPDATE user_flags SET is_active = $3 WHERE user_id = $1 AND flag_name = $2 RETURNING *;
+
+
+-- name: GetAllUserAchievements :many
+-- SELECT * FROM user_achievements WHERE user_id = $1;
+SELECT uas.*,
+    ag.name as achievement_group_name,
+    a.name as achievement_name
+FROM user_achievements uas
+JOIN achievements a ON uas.achievement_id = a.id
+JOIN achievement_groups ag on a.catergory_id = ag.id
+WHERE uas.user_id = $1;
+-- name: GetUserAchievementById :one
+SELECT * FROM user_achievements WHERE achievement_id = $1;
+-- name: GetUserAchivementsByCategory :many
+SELECT ua.*,
+    a.name as achievement_name,
+    a.category_id,
+    ag.name as category_name
+FROM user_achievements ua
+JOIN achievements a ON ua.achievement_id = a.id
+JOIN achievement_groups ag on a.category_id = ag.id
+WHERE ua.user_id = $1
+    AND ($2 IS NULL OR a.catergory_id = $2)
+ORDER BY ag.position, a.name;
+-- name: GiveUserAchievement :one
+INSERT INTO user_achievements (user_id, achievement_id, current_progress, is_complete)
+SELECT $1, a.id, 0, false
+FROM achievements a
+WHERE a.id = $2
+RETURNING *;
+
+-- name: GetAchievementById :one
+SELECT * FROM achievements WHERE id = $1;

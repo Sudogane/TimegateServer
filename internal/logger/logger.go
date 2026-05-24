@@ -3,6 +3,7 @@ package logger
 import (
 	"github.com/google/uuid"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 type Logger struct {
@@ -10,7 +11,9 @@ type Logger struct {
 }
 
 func NewLogger() (*Logger, error) {
-	l, err := zap.NewDevelopment()
+	config := zap.NewDevelopmentConfig()
+	config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	l, err := config.Build()
 	if err != nil {
 		return nil, err
 	}

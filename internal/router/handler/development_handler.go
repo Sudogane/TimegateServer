@@ -8,55 +8,42 @@ import (
 
 type DevelopmentHandler struct {
 	BaseHandler
-	userService  *services.UserService
-	flagsService *services.UserFlagsService
+	userService *services.UserService
+	newService  *services.UserAchievementsService
 }
 
-func NewDevelopmentHandle(userService *services.UserService, flagsService *services.UserFlagsService) *DevelopmentHandler {
+func NewDevelopmentHandle(server server.GameServerInterface, ns *services.UserAchievementsService) *DevelopmentHandler {
 	return &DevelopmentHandler{
-		BaseHandler:  *NewBaseHandler(nil),
-		userService:  userService,
-		flagsService: flagsService,
+		BaseHandler: *NewBaseHandler(server),
+		newService:  ns,
 	}
 }
 
 func (h *DevelopmentHandler) Handle(session *server.PlayerSession, msg *packets.FromClientToServer) error {
-	//session.Log("INFO", "Received development packet")
-
-	//h.flagsService.SetUserFlag(session.PlayerId, "test_flag", "{\"active\": true}")
-
-	//test, err := h.flagsService.GetUserFlags(session.PlayerId)
-	//session.Log("DEBUG", fmt.Sprintf("test: %v", test)+" "+fmt.Sprintf("err: %v", err))
-
-	//flagActive, _ := h.flagsService.CheckUserFlag(session.PlayerId, "test_flag")
-	//fmt.Println(flagActive.Active)
-
-	/*allowedSpecies := []string{"Morphomon", "Alphamon", "Chronomon: Holy Mode"}
-	speciesIdMap := map[string]int32{
-		"Morphomon":            1,
-		"Alphamon":             2,
-		"Chronomon: Holy Mode": 3,
-	}
-
-	speciesSelected := msg.GetDev().GetSTARTER_SPECIES()
-
-	if !slices.Contains(allowedSpecies, speciesSelected) {
-		session.Log("ERROR", "Invalid starter selected")
-		return fmt.Errorf("invalid starter selected")
-	}
-
-	selectedId, ok := speciesIdMap[speciesSelected]
-	if !ok {
-		session.Log("ERROR", "Invalid starter selected")
-		return fmt.Errorf("invalid starter selected")
-	}
-
-	err := h.userService.GiveDigimonToUser(session.PlayerId, selectedId, true, false)
+	session.Logger.Infow("Received Development Packet")
+	achievements, err := h.newService.GetUserAchievements(session.PlayerId)
 	if err != nil {
-		session.Log("ERROR", "Error giving digimon to user: "+err.Error())
-	} else {
-		session.Log("INFO", "Gave digimon to user")
-	}*/
+		session.Logger.Error(err)
+	}
+
+	achievementsData := make([]*packets.AchievementData, len(achievements))
+	for i, achievement := range achievements {
+		achievementsData[i] = &packets.AchievementData{
+			AchievementGroupName: achievement.AchievementGroupName,
+			AchievementName:      achievement.AchievementName,
+			ObtainedDate:         achievement.UnlockedAt.Time.Format("02/01/2006"),
+		}
+
+		session.Logger.Info(achievement.IsComplete)
+	}
+
+	responsePacket := &packets.FromServerToClient_GetAllAchievements{
+		GetAllAchievements: &packets.GetAllAchievementsResponse{
+			Achievement: achievementsData,
+		},
+	}
+
+	h.Send(session, responsePacket)
 
 	return nil
 }

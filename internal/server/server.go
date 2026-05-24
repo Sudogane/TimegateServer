@@ -165,7 +165,7 @@ func (gs *GameServer) WriteLoop(session *PlayerSession) {
 }
 
 func (gs *GameServer) SendMessage(sessionId string, message packets.ServerPayload) {
-	session := gs.sessions[sessionId]
+	session := gs.GetSession(sessionId)
 	if session == nil {
 		return
 	}

@@ -127,7 +127,12 @@ func (h *AuthenticationHandler) handleUserRegister(session *server.PlayerSession
 		return
 	}
 
-	hashedPassword, _ := crypt.HashPassword(registerRequestData.GetPassword())
+	hashedPassword, err := crypt.HashPassword(registerRequestData.GetPassword())
+	if err != nil {
+		h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)
+		session.Logger.Errorw(err.Error())
+		return
+	}
 	user, err := h.userService.CreateUserWithResources(registerRequestData.GetUsername(), hashedPassword)
 	if err != nil {
 		h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)
@@ -147,6 +152,7 @@ func (h *AuthenticationHandler) handleUserRegister(session *server.PlayerSession
 		StaminaMax:     resources.StaminaMax.Int32,
 	}
 	session.PlayerId = user.ID
+	session.Logger = h.server.GetLogger().WithSession(session.ID, user.ID)
 
 	responsePacket := packets.NewAuthenticationResponse("user access token", userData, "DEVELOPMENT")
 	h.Send(session, responsePacket)

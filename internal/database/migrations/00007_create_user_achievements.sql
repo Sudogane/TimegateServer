@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS user_achievements (
     achievement_id INT REFERENCES achievements(id) ON DELETE CASCADE,
     current_progress INT DEFAULT 0,
     is_complete BOOLEAN DEFAULT false,
-    unlocked_at TIMESTAMP DEFAULT NULL,
+    unlocked_at TIMESTAMP DEFAULT NOW(),
     last_updated TIMESTAMP DEFAULT NOW(),
     PRIMARY KEY (user_id, achievement_id)
 );

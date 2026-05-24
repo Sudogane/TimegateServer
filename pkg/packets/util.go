@@ -46,3 +46,10 @@ func NewDigimonTeamViewResponse(digimon *DigimonData) ServerPayload {
 		},
 	}
 }
+
+func NewAchievementResponse(achievementName, achievementGroupName string) *AchievementData {
+	return &AchievementData{
+		AchievementGroupName: achievementGroupName,
+		AchievementName:      achievementName,
+	}
+}
