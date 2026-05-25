@@ -43,6 +43,12 @@ func (r *Router) RegisterRouter(packetType packets.PacketType, handler handler.H
 }
 
 func (r *Router) Route(session *server.PlayerSession, msg *packets.FromClientToServer) {
+	/* Fix Later: Crashes if session id is invalid */
+	if err := r.authenticate(session, msg); err != nil {
+		session.Logger.Errorw("Auth failed", "error", err)
+		return
+	}
+
 	r.mutex.RLock()
 	handler, exists := r.handlers[msg.PacketType]
 	r.mutex.RUnlock()
@@ -62,6 +68,7 @@ func (r *Router) Route(session *server.PlayerSession, msg *packets.FromClientToS
 func (r *Router) RegisterRoutes() {
 	// --> Authentication ::
 	r.RegisterRouter(packets.PacketType_AUTHENTICATION_REQUEST, handler.NewAuthenticationHandler(r.server))
+	r.RegisterRouter(packets.PacketType_AUTHENTICATION_RECONNECT_REQUEST, handler.NewAuthenticationHandler(r.server))
 
 	// --> Dialogue ::
 	dialogueHandler := handler.NewDialogueHandler(r.server, r.userService, r.userFlagService, r.userAchievementsService)

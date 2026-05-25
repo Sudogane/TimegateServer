@@ -8,8 +8,7 @@ import (
 
 type DevelopmentHandler struct {
 	BaseHandler
-	userService *services.UserService
-	newService  *services.UserAchievementsService
+	newService *services.UserAchievementsService
 }
 
 func NewDevelopmentHandle(server server.GameServerInterface, ns *services.UserAchievementsService) *DevelopmentHandler {

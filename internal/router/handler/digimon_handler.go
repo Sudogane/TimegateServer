@@ -33,14 +33,13 @@ func (h *DigimonHandler) Handle(session *server.PlayerSession, msg *packets.From
 
 func (h *DigimonHandler) onShowDigimon(session *server.PlayerSession) {
 	userDigimon, err := h.digimonService.GetUserDigimonByStarterFlag(session.PlayerId)
-
-	if userDigimon.ID == uuid.Nil {
+	if err != nil {
+		session.Logger.Errorw(err.Error())
 		h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)
 		return
 	}
 
-	if err != nil {
-		session.Logger.Errorw(err.Error())
+	if userDigimon.ID == uuid.Nil {
 		h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)
 		return
 	}

@@ -112,7 +112,7 @@ SELECT uas.*,
     a.name as achievement_name
 FROM user_achievements uas
 JOIN achievements a ON uas.achievement_id = a.id
-JOIN achievement_groups ag on a.catergory_id = ag.id
+JOIN achievement_groups ag on a.category_id = ag.id
 WHERE uas.user_id = $1;
 -- name: GetUserAchievementById :one
 SELECT * FROM user_achievements WHERE achievement_id = $1;
@@ -125,7 +125,7 @@ FROM user_achievements ua
 JOIN achievements a ON ua.achievement_id = a.id
 JOIN achievement_groups ag on a.category_id = ag.id
 WHERE ua.user_id = $1
-    AND ($2 IS NULL OR a.catergory_id = $2)
+    AND ($2 IS NULL OR a.category_id = $2)
 ORDER BY ag.position, a.name;
 -- name: GiveUserAchievement :one
 INSERT INTO user_achievements (user_id, achievement_id, current_progress, is_complete)

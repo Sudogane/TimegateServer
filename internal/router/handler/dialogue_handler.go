@@ -101,14 +101,19 @@ func (h *DialogueHandler) onDialogueFinished(session *server.PlayerSession, data
 				return
 			}
 
-			h.userAchievementService.GiveAchievementToUser(session.PlayerId, da.AchievementId)
+			uAchiev, err := h.userAchievementService.GiveAchievementToUser(session.PlayerId, da.AchievementId)
+			if err != nil {
+				session.Logger.Errorw(err.Error())
+				h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)
+				return
+			}
 			responsePacket := &packets.FromServerToClient_AchievementObtained{
 				AchievementObtained: &packets.AchievementObtained{
 					Achievement: packets.NewAchievementResponse(achievementFromDb.Name, ""),
 				},
 			}
 
-			session.Logger.Info("ENVIADO ACHIEVEMENT")
+			session.Logger.Info(uAchiev)
 
 			h.Send(session, responsePacket)
 		}

@@ -376,6 +376,7 @@ type AuthenticationResponse struct {
 	AccessToken     string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
 	UserData        *UserData              `protobuf:"bytes,2,opt,name=user_data,json=userData,proto3" json:"user_data,omitempty"`
 	DialogueTrigger *DialogueTrigger       `protobuf:"bytes,3,opt,name=dialogue_trigger,json=dialogueTrigger,proto3" json:"dialogue_trigger,omitempty"`
+	UserId          string                 `protobuf:"bytes,4,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -429,6 +430,13 @@ func (x *AuthenticationResponse) GetDialogueTrigger() *DialogueTrigger {
 		return x.DialogueTrigger
 	}
 	return nil
+}
+
+func (x *AuthenticationResponse) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
 }
 
 // General Info
@@ -1227,11 +1235,12 @@ const file_server_proto_rawDesc = "" +
 	"\rErrorResponse\x12&\n" +
 	"\x04code\x18\x01 \x01(\x0e2\x12.packets.ErrorCodeR\x04code\"%\n" +
 	"\x13WebsocketIDResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"\xb0\x01\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\xc9\x01\n" +
 	"\x16AuthenticationResponse\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12.\n" +
 	"\tuser_data\x18\x02 \x01(\v2\x11.packets.UserDataR\buserData\x12C\n" +
-	"\x10dialogue_trigger\x18\x03 \x01(\v2\x18.packets.DialogueTriggerR\x0fdialogueTrigger\"\xbe\x01\n" +
+	"\x10dialogue_trigger\x18\x03 \x01(\v2\x18.packets.DialogueTriggerR\x0fdialogueTrigger\x12\x17\n" +
+	"\auser_id\x18\x04 \x01(\tR\x06userId\"\xbe\x01\n" +
 	"\bUserData\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x14\n" +
 	"\x05level\x18\x02 \x01(\x05R\x05level\x12\x10\n" +
