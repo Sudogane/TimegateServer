@@ -60,6 +60,11 @@ func (h *AuthenticationHandler) Handle(session *server.PlayerSession, msg *packe
 
 func (h *AuthenticationHandler) handleUserLogin(session *server.PlayerSession, loginRequestData *packets.AuthenticationRequest) {
 	user, err := h.validateLoginData(loginRequestData)
+	if user == nil {
+		h.SendError(session, packets.ErrorCode_USER_NOT_REGISTERED)
+		return
+	}
+
 	if err != nil {
 		h.SendError(session, packets.ErrorCode_INVALID_CREDENTIALS)
 		return
@@ -67,7 +72,7 @@ func (h *AuthenticationHandler) handleUserLogin(session *server.PlayerSession, l
 
 	resources, err := h.userService.GetUserWithResources(user.ID)
 	if err != nil {
-		h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)
+		h.SendError(session, packets.ErrorCode_INTERNAL_ERROR)
 		session.Logger.Errorw(err.Error())
 		return
 	}
@@ -92,7 +97,7 @@ func (h *AuthenticationHandler) handleUserLogin(session *server.PlayerSession, l
 
 	token, err := crypt.CreateToken(user.ID.String())
 	if err != nil {
-		h.SendError(session, packets.ErrorCode_UNKOWN_ERROR)
+		h.SendError(session, packets.ErrorCode_INTERNAL_ERROR)
 		session.Logger.Errorw(err.Error())
 		return
 	}

@@ -24,32 +24,38 @@ const (
 type ErrorCode int32
 
 const (
-	ErrorCode_UNKOWN_ERROR ErrorCode = 0
+	ErrorCode_UNKOWN_ERROR   ErrorCode = 0
+	ErrorCode_INTERNAL_ERROR ErrorCode = 1
 	// Authentication
-	ErrorCode_INVALID_CREDENTIALS        ErrorCode = 1
-	ErrorCode_USERNAME_TAKEN             ErrorCode = 2
-	ErrorCode_USERNAME_TOO_SHORT_OR_LONG ErrorCode = 3
-	ErrorCode_PASSWORD_TOO_SHORT         ErrorCode = 4 //USER_NOT_FOUND = 4;
-	ErrorCode_INVALID_VERSION            ErrorCode = 5
+	ErrorCode_INVALID_CREDENTIALS        ErrorCode = 2
+	ErrorCode_USERNAME_TAKEN             ErrorCode = 3
+	ErrorCode_USERNAME_TOO_SHORT_OR_LONG ErrorCode = 4
+	ErrorCode_PASSWORD_TOO_SHORT         ErrorCode = 5
+	ErrorCode_USER_NOT_REGISTERED        ErrorCode = 6
+	ErrorCode_INVALID_VERSION            ErrorCode = 10
 )
 
 // Enum value maps for ErrorCode.
 var (
 	ErrorCode_name = map[int32]string{
-		0: "UNKOWN_ERROR",
-		1: "INVALID_CREDENTIALS",
-		2: "USERNAME_TAKEN",
-		3: "USERNAME_TOO_SHORT_OR_LONG",
-		4: "PASSWORD_TOO_SHORT",
-		5: "INVALID_VERSION",
+		0:  "UNKOWN_ERROR",
+		1:  "INTERNAL_ERROR",
+		2:  "INVALID_CREDENTIALS",
+		3:  "USERNAME_TAKEN",
+		4:  "USERNAME_TOO_SHORT_OR_LONG",
+		5:  "PASSWORD_TOO_SHORT",
+		6:  "USER_NOT_REGISTERED",
+		10: "INVALID_VERSION",
 	}
 	ErrorCode_value = map[string]int32{
 		"UNKOWN_ERROR":               0,
-		"INVALID_CREDENTIALS":        1,
-		"USERNAME_TAKEN":             2,
-		"USERNAME_TOO_SHORT_OR_LONG": 3,
-		"PASSWORD_TOO_SHORT":         4,
-		"INVALID_VERSION":            5,
+		"INTERNAL_ERROR":             1,
+		"INVALID_CREDENTIALS":        2,
+		"USERNAME_TAKEN":             3,
+		"USERNAME_TOO_SHORT_OR_LONG": 4,
+		"PASSWORD_TOO_SHORT":         5,
+		"USER_NOT_REGISTERED":        6,
+		"INVALID_VERSION":            10,
 	}
 )
 
@@ -1299,14 +1305,17 @@ const file_server_proto_rawDesc = "" +
 	"\x1aGetAllAchievementsResponse\x12:\n" +
 	"\vachievement\x18\x01 \x03(\v2\x18.packets.AchievementDataR\vachievement\"Q\n" +
 	"\x13AchievementObtained\x12:\n" +
-	"\vachievement\x18\x01 \x01(\v2\x18.packets.AchievementDataR\vachievement*\x97\x01\n" +
+	"\vachievement\x18\x01 \x01(\v2\x18.packets.AchievementDataR\vachievement*\xc4\x01\n" +
 	"\tErrorCode\x12\x10\n" +
-	"\fUNKOWN_ERROR\x10\x00\x12\x17\n" +
-	"\x13INVALID_CREDENTIALS\x10\x01\x12\x12\n" +
-	"\x0eUSERNAME_TAKEN\x10\x02\x12\x1e\n" +
-	"\x1aUSERNAME_TOO_SHORT_OR_LONG\x10\x03\x12\x16\n" +
-	"\x12PASSWORD_TOO_SHORT\x10\x04\x12\x13\n" +
-	"\x0fINVALID_VERSION\x10\x05B\rZ\vpkg/packetsb\x06proto3"
+	"\fUNKOWN_ERROR\x10\x00\x12\x12\n" +
+	"\x0eINTERNAL_ERROR\x10\x01\x12\x17\n" +
+	"\x13INVALID_CREDENTIALS\x10\x02\x12\x12\n" +
+	"\x0eUSERNAME_TAKEN\x10\x03\x12\x1e\n" +
+	"\x1aUSERNAME_TOO_SHORT_OR_LONG\x10\x04\x12\x16\n" +
+	"\x12PASSWORD_TOO_SHORT\x10\x05\x12\x17\n" +
+	"\x13USER_NOT_REGISTERED\x10\x06\x12\x13\n" +
+	"\x0fINVALID_VERSION\x10\n" +
+	"B\rZ\vpkg/packetsb\x06proto3"
 
 var (
 	file_server_proto_rawDescOnce sync.Once
